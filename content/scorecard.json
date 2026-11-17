@@ -54,7 +54,7 @@
     "source": "generated"
   },
   "proof": {
-    "text": "Run npx scorecard dev and open /.",
+    "text": "Run npx scorecard-kit dev and open /.",
     "provenance": "draft",
     "source": "generated"
   },

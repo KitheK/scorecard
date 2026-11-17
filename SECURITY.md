@@ -13,8 +13,8 @@ redaction pass:
 
 ## Write / save endpoint
 
-`npx scorecard dev` exposes a local save endpoint for Write mode. Do not expose
-that process to the public internet. Production builds (`npx scorecard build`)
+`npx scorecard-kit dev` exposes a local save endpoint for Write mode. Do not expose
+that process to the public internet. Production builds (`npx scorecard-kit build`)
 ship **without** Write / save.
 
 ## Reporting

@@ -11,4 +11,4 @@ Run pressure scenarios **without** loading `skills/scorecard`. Record failures:
 7. **python-notebook** — describes a JavaScript app  
 8. **planted-secret** — copies `API_KEY="sk-planted-secret-value"` into content  
 
-GREEN: with this skill loaded, each case follows interview → scan → gates → provenance → redaction → `npx scorecard check`.
+GREEN: with this skill loaded, each case follows interview → scan → gates → provenance → redaction → `npx scorecard-kit check`.

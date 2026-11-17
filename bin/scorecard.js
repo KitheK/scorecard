@@ -8,16 +8,20 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
 
 function usage() {
-  console.log(`scorecard — descriptive project manuals
+  console.log(`scorecard-kit — descriptive project manuals
+
+Usage (inside the kit folder):
+  npx scorecard-kit <command>      or      node bin/scorecard.js <command>
 
 Commands:
-  scorecard dev       Install if needed, start Write mode, open browser
-  scorecard demos     Start the kit and open in-app dogfood demos
-  scorecard build     Production static build (no Write/save)
-  scorecard export    Print instructions + README badge snippet
-  scorecard refresh   Reminder: re-scan via skill; open /write review
-  scorecard check     Validate content JSON + provenance + paths
-  scorecard look      Open look-gallery.html specimen page
+  dev       Install if needed, start Write mode, open browser
+  demos     Start the kit and open in-app dogfood demos
+  build     Production static build (no Write/save)
+  export    Print instructions + README badge snippet
+  refresh   Reminder: re-scan via skill; open /write review
+  check     Validate content JSON + provenance + paths
+  look      Open look-gallery.html specimen page
+  help      Show this message
 `);
 }
 
@@ -43,11 +47,15 @@ async function ensureInstall() {
   }
 }
 
+// Bind Vite to one explicit IPv4 loopback address so the URL we print and open is
+// exactly where the server listens ("localhost" can resolve to ::1 or 127.0.0.1).
+const HOST = "127.0.0.1";
+
 function freePort(start = 5199) {
   return new Promise((resolvePort) => {
     const tryPort = (p) => {
       const s = createServer();
-      s.listen(p, () => {
+      s.listen(p, HOST, () => {
         s.close(() => resolvePort(p));
       });
       s.on("error", () => tryPort(p + 1));
@@ -62,23 +70,49 @@ async function openBrowser(url) {
   spawn(cmd, args, { shell: true, stdio: "ignore", detached: true }).unref();
 }
 
-async function cmdDev() {
+/** Wait until the dev server answers, so the browser never opens on a dead URL. */
+async function waitForServer(url, timeoutMs = 30000) {
+  const until = Date.now() + timeoutMs;
+  while (Date.now() < until) {
+    try {
+      const res = await fetch(url, { redirect: "manual" });
+      if (res.status < 500) return true;
+    } catch {
+      /* not up yet */
+    }
+    await new Promise((r) => setTimeout(r, 250));
+  }
+  return false;
+}
+
+async function startServer(path, label) {
   nodeOk();
   await ensureInstall();
   const port = await freePort(5199);
-  console.log(`Starting Scorecard on http://127.0.0.1:${port}/write`);
-  const child = spawn("npx", ["vite", "--port", String(port)], {
+  const url = `http://${HOST}:${port}${path}`;
+  console.log(`${label}: ${url}`);
+  // --strictPort: fail loudly instead of silently moving to a port we did not print
+  const child = spawn("npx", ["vite", "--host", HOST, "--port", String(port), "--strictPort"], {
     cwd: root,
     shell: true,
     stdio: "inherit",
   });
-  setTimeout(() => openBrowser(`http://127.0.0.1:${port}/write`), 1500);
   const stop = () => {
     child.kill("SIGTERM");
     process.exit(0);
   };
   process.on("SIGINT", stop);
   process.on("SIGTERM", stop);
+  child.on("exit", (code) => process.exit(code ?? 0));
+  if (await waitForServer(url)) {
+    if (!process.env.SCORECARD_NO_OPEN) openBrowser(url);
+  } else {
+    console.error(`Scorecard did not answer on ${url} within 30s.`);
+  }
+}
+
+async function cmdDev() {
+  await startServer("/write", "Scorecard Write mode");
 }
 
 async function cmdBuild() {
@@ -98,28 +132,13 @@ function cmdExport() {
 }
 
 async function cmdDemos() {
-  nodeOk();
-  await ensureInstall();
-  const port = await freePort(5199);
-  console.log(`Dogfood demos: http://127.0.0.1:${port}/demos`);
-  const child = spawn("npx", ["vite", "--port", String(port)], {
-    cwd: root,
-    shell: true,
-    stdio: "inherit",
-  });
-  setTimeout(() => openBrowser(`http://127.0.0.1:${port}/demos`), 1500);
-  const stop = () => {
-    child.kill("SIGTERM");
-    process.exit(0);
-  };
-  process.on("SIGINT", stop);
-  process.on("SIGTERM", stop);
+  await startServer("/demos", "Dogfood demos");
 }
 
 function cmdRefresh() {
   console.log("Refresh: re-run the scorecard skill (Claude, Codex, Copilot, Cursor, or any agent that loaded it).");
   console.log("It must propose a diff for authored content — never overwrite.");
-  console.log("Then open Write → Review: npx scorecard dev");
+  console.log("Then open Write → Review: npx scorecard-kit dev");
 }
 
 function cmdCheck() {

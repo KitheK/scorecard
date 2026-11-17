@@ -9,13 +9,13 @@
     },
     {
       "title": "Start Write mode",
-      "command": "npx scorecard dev",
+      "command": "npx scorecard-kit dev",
       "provenance": "draft",
       "source": "generated"
     },
     {
       "title": "Publish",
-      "command": "npx scorecard build",
+      "command": "npx scorecard-kit build",
       "provenance": "draft",
       "source": "generated"
     }

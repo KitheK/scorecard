@@ -1,11 +1,10 @@
 {
   "name": "scorecard",
   "displayName": "Scorecard",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Turn any repo into a descriptive project manual with Write mode. Never grades.",
   "author": {
-    "name": "Kithe",
-    "url": "https://github.com/KitheK"
+    "name": "Kithe"
   },
   "homepage": "https://github.com/KitheK/scorecard",
   "repository": "https://github.com/KitheK/scorecard",

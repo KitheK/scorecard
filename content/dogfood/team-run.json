@@ -9,7 +9,7 @@
     },
     {
       "title": "Open Write mode",
-      "command": "npx scorecard dev",
+      "command": "npx scorecard-kit dev",
       "provenance": "draft",
       "source": "generated"
     }

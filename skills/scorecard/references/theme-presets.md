@@ -20,4 +20,4 @@ plateFrame / demoFrame: coins46 · pavot30 · lys33 · halo01 · none
 footFrieze: lys33 · pavot30 · none  
 rail: pavot30 · band01 · none  
 
-Specimens: `scorecard/public/previews/nouveau/` and `npx scorecard look`
+Specimens: `scorecard/public/previews/nouveau/` and `npx scorecard-kit look`

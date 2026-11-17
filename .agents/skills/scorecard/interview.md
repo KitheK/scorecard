@@ -29,6 +29,6 @@ Propose building blocks, flow, dependencies, failure modes, decision candidates,
 
 ## Stage E — Look
 
-Propose defaults from A3. Show named choices with specimen links (`public/previews/…` or `npx scorecard look`).
+Propose defaults from A3. Show named choices with specimen links (`public/previews/…` or `npx scorecard-kit look`).
 
 - E1 tone · E2 scheme · E3 display face · E4 ornaments · E5 ornament colour · E6 no preference
