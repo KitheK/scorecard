@@ -14,7 +14,8 @@ Usage (inside the kit folder):
   npx scorecard-kit <command>      or      node bin/scorecard.js <command>
 
 Commands:
-  dev       Install if needed, start Write mode, open browser
+  dev       Install if needed; open interview when answers empty, else Write mode
+  interview Start dev server on /interview (local authoring)
   demos     Start the kit and open in-app dogfood demos
   build     Production static build (no Write/save)
   export    Print instructions + README badge snippet
@@ -111,8 +112,43 @@ async function startServer(path, label) {
   }
 }
 
+function normalizeAnswerValue(raw) {
+  if (raw && typeof raw === "object" && raw !== null && "value" in raw) return raw.value;
+  return raw;
+}
+
+function interviewNeedsForm(data) {
+  const keys = Object.keys(data?.answers ?? {});
+  if (keys.length === 0) return true;
+  return !keys.some((k) => {
+    const v = normalizeAnswerValue(data.answers[k]);
+    if (v === null || v === undefined) return false;
+    if (typeof v === "string" && !v.trim()) return false;
+    return true;
+  });
+}
+
+function resolveInterviewPath() {
+  const interviewPath = join(root, "content", "interview.json");
+  if (!existsSync(interviewPath)) return { path: "/interview", label: "Scorecard interview" };
+  try {
+    const data = JSON.parse(readFileSync(interviewPath, "utf8"));
+    if (interviewNeedsForm(data)) {
+      return { path: "/interview", label: "Scorecard interview" };
+    }
+  } catch {
+    return { path: "/interview", label: "Scorecard interview" };
+  }
+  return { path: "/write", label: "Scorecard Write mode" };
+}
+
 async function cmdDev() {
-  await startServer("/write", "Scorecard Write mode");
+  const { path, label } = resolveInterviewPath();
+  await startServer(path, label);
+}
+
+async function cmdInterview() {
+  await startServer("/interview", "Scorecard interview");
 }
 
 async function cmdBuild() {
@@ -207,6 +243,7 @@ function cmdLook() {
 const cmd = process.argv[2] ?? "help";
 const map = {
   dev: cmdDev,
+  interview: cmdInterview,
   demos: cmdDemos,
   build: cmdBuild,
   export: cmdExport,
