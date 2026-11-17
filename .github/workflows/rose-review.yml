@@ -1,0 +1,146 @@
+
+# Rose: independent reviewer gate (Scorecard). Provider-agnostic orchestration.
+# Comments and approvals use GH_PAT so they appear as PR_ASSIGNEE, not github-actions.
+# See .github/agents/README.md
+#
+# Opt in: gh variable set ENABLE_ROSE_REVIEW --body true
+
+name: Rose review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number to review (re-run Rose on an existing PR)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  checks: write
+  id-token: write
+  actions: read
+
+concurrency:
+  group: rose-${{ github.event.pull_request.number || github.event.inputs.pr_number }}
+  cancel-in-progress: true
+
+jobs:
+  rose-review:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+      PR: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
+      AGENT_PROVIDER: ${{ vars.AGENT_PROVIDER || 'cursor' }}
+      PR_ASSIGNEE: ${{ vars.PR_ASSIGNEE || 'KitheK' }}
+    steps:
+      - name: Skip when Rose is disabled
+        if: vars.ENABLE_ROSE_REVIEW != 'true'
+        run: |
+          echo "ENABLE_ROSE_REVIEW is not true; rose-review check passes without reviewing."
+          echo "Provider would be: $AGENT_PROVIDER (set AGENT_PROVIDER + ENABLE_ROSE_REVIEW per .github/agents/README.md)."
+
+      - uses: actions/checkout@v4
+        if: vars.ENABLE_ROSE_REVIEW == 'true'
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+
+      - name: Ensure PR assigned to owner
+        if: vars.ENABLE_ROSE_REVIEW == 'true'
+        run: gh pr edit "$PR" --add-assignee "$PR_ASSIGNEE" || true
+
+      - name: Wait for tests CI
+        id: ci
+        if: vars.ENABLE_ROSE_REVIEW == 'true'
+        run: bash scripts/agents/wait-for-tests.sh "$PR"
+
+      - name: Comment when CI is red
+        if: vars.ENABLE_ROSE_REVIEW == 'true' && steps.ci.outputs.ci_ok != 'true'
+        run: |
+          name=$(cat /tmp/ci-fail-name.txt 2>/dev/null || echo tests)
+          body=$(printf '%s\n' "**Verdict: CHANGES REQUESTED**" "" \
+            "CI is not green (\`$name\`). Rose does not review a red suite." \
+            "Re-run or fix tests, then push; Rose will run again." "" \
+            "Rose-Verdict: CHANGES")
+          gh pr comment "$PR" --body "$body"
+          gh pr edit "$PR" --add-label "review:changes" --remove-label "review:pass" --remove-label "ready-to-merge" || true
+          echo "::error::CI not green; Rose will not PASS."
+          exit 1
+
+      # ----- Provider: cursor | grok -----
+      - name: Hand off to external Rose (cursor/grok)
+        if: >-
+          vars.ENABLE_ROSE_REVIEW == 'true' &&
+          steps.ci.outputs.ci_ok == 'true' &&
+          (env.AGENT_PROVIDER == 'cursor' || env.AGENT_PROVIDER == 'grok')
+        run: |
+          prompt=".github/agents/prompts/rose-review.md"
+          body=$(printf '%s\n' \
+            "### Rose hand-off (\`AGENT_PROVIDER=$AGENT_PROVIDER\`)" \
+            "" \
+            "CI is green. Run Rose with \`$prompt\` (and root \`AGENTS.md\`)." \
+            "Post the review as a **PR conversation comment** (\`gh pr comment\`), not request-changes." \
+            "End with exactly:" \
+            "" \
+            '```' \
+            "Rose-Verdict: PASS" \
+            '```' \
+            "or" \
+            '```' \
+            "Rose-Verdict: CHANGES" \
+            '```' \
+            "" \
+            "Assignee is \`$PR_ASSIGNEE\`. On PASS, Actions will approve as that account via \`GH_PAT\`.")
+          gh pr comment "$PR" --body "$body"
+
+      - name: Wait for external Rose-Verdict
+        if: >-
+          vars.ENABLE_ROSE_REVIEW == 'true' &&
+          steps.ci.outputs.ci_ok == 'true' &&
+          (env.AGENT_PROVIDER == 'cursor' || env.AGENT_PROVIDER == 'grok')
+        run: bash scripts/agents/wait-for-rose-verdict.sh "$PR"
+
+      # ----- Provider: claude -----
+      - uses: anthropics/claude-code-action@v1
+        if: >-
+          vars.ENABLE_ROSE_REVIEW == 'true' &&
+          steps.ci.outputs.ci_ok == 'true' &&
+          env.AGENT_PROVIDER == 'claude'
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ secrets.GH_PAT }}
+          plugin_marketplaces: |
+            https://github.com/anthropics/claude-plugins-official.git
+          plugins: |
+            pr-review-toolkit@claude-plugins-official
+          claude_args: >-
+            --allowedTools "Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr comment:*),Bash(gh pr review:*),Bash(gh pr checks:*),Bash(gh issue view:*),Bash(git log:*),Bash(git diff:*),Bash(git show:*),Bash(npm:*),Bash(node:*),Read,Glob,Grep,Write,Task"
+          prompt: |
+            Follow the prompt file .github/agents/prompts/rose-review.md exactly.
+            Substitute $PR=${{ env.PR }} and $REPO=${{ github.repository }}.
+            Post with `gh pr comment` (conversation comment). Write PASS or CHANGES to review-verdict.txt.
+
+      - name: Map Claude verdict file if present
+        if: >-
+          vars.ENABLE_ROSE_REVIEW == 'true' &&
+          steps.ci.outputs.ci_ok == 'true' &&
+          env.AGENT_PROVIDER == 'claude'
+        run: |
+          if [ -f review-verdict.txt ]; then
+            echo "Using review-verdict.txt from Claude"
+          else
+            bash scripts/agents/wait-for-rose-verdict.sh "$PR" || true
+          fi
+
+      - name: Enforce verdict
+        if: vars.ENABLE_ROSE_REVIEW == 'true' && steps.ci.outputs.ci_ok == 'true'
+        run: bash scripts/agents/enforce-rose-verdict.sh "$PR"

@@ -1,0 +1,43 @@
+name: Tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Vitest
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: scorecard-kit check
+        run: npm run check
+
+      - name: Skill mirrors in sync
+        run: |
+          node scripts/sync-agent-skills.mjs
+          git diff --exit-code -- skills/scorecard .claude/skills/scorecard .agents/skills/scorecard .github/skills/scorecard .github/agents/scorecard.agent.md

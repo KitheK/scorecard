@@ -1,0 +1,86 @@
+
+# Nightly: one overnight-queue issue. Provider via AGENT_PROVIDER (cursor|grok|claude).
+# Opt in: gh variable set ENABLE_OVERNIGHT_AGENT --body true
+# See .github/agents/README.md and docs/overnight-queue.md.
+
+name: Overnight agent nightly
+
+on:
+  schedule:
+    - cron: "23 10 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+  actions: read
+
+concurrency:
+  group: overnight-agent
+  cancel-in-progress: false
+
+jobs:
+  nightly:
+    if: vars.ENABLE_OVERNIGHT_AGENT == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+      AGENT_PROVIDER: ${{ vars.AGENT_PROVIDER || 'cursor' }}
+      PR_ASSIGNEE: ${{ vars.PR_ASSIGNEE || 'KitheK' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+
+      - name: Hand off overnight pick to external agent
+        if: env.AGENT_PROVIDER == 'cursor' || env.AGENT_PROVIDER == 'grok'
+        run: |
+          set -euo pipefail
+          n=$(gh issue list --state open --label overnight-queue --json number,labels --limit 100 \
+            | node -e '
+          const skip = new Set(["needs-human", "blocked"]);
+          const issues = JSON.parse(require("fs").readFileSync(0,"utf8"));
+          for (const it of issues) {
+            const names = new Set((it.labels || []).map(l => l.name));
+            if ([...names].some(x => skip.has(x))) continue;
+            console.log(it.number);
+            break;
+          }')
+          if [ -z "$n" ]; then
+            echo NONE > overnight-picked.txt
+            echo "Queue empty."
+            exit 0
+          fi
+          echo "$n" > overnight-picked.txt
+          body=$(printf '%s\n' \
+            "### Overnight hand-off (\`AGENT_PROVIDER=$AGENT_PROVIDER\`)" \
+            "" \
+            "Please implement issue #$n using:" \
+            "- \`.github/agents/prompts/overnight-agent.md\`" \
+            "- root \`AGENTS.md\`" \
+            "- queue order in \`docs/overnight-queue.md\`" \
+            "" \
+            "Open one **draft** PR (\`Closes #$n\`), label \`overnight-agent\`, **assign to \`$PR_ASSIGNEE\`**, remove \`overnight-queue\`." \
+            "If blocked, add \`needs-human\`.")
+          gh issue comment "$n" --body "$body"
+
+      - uses: actions/setup-node@v4
+        if: env.AGENT_PROVIDER == 'claude'
+        with:
+          node-version: "20"
+          cache: npm
+
+      - uses: anthropics/claude-code-action@v1
+        if: env.AGENT_PROVIDER == 'claude'
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ secrets.GH_PAT }}
+          claude_args: >-
+            --allowedTools "Bash(npm:*),Bash(node:*),Bash(npx:*),Bash(git:*),Bash(gh:*),Bash(bash scripts/ci-local.sh),Edit,Write,Read,Glob,Grep,Task"
+          prompt: |
+            Follow .github/agents/prompts/overnight-agent.md exactly.
+            Substitute $REPO=${{ github.repository }} and $PR_ASSIGNEE=${{ vars.PR_ASSIGNEE || 'KitheK' }}.

@@ -1,0 +1,133 @@
+
+# Ask a coding agent to work on an issue immediately.
+#
+# Triggers:
+#   1. Actions → "Coding agent" → Run workflow → issue number
+#   2. Comment `/agent` or `/agent now` on an issue (OWNER/MEMBER/COLLABORATOR)
+#   3. Add the `agent-now` label
+#
+# Provider: AGENT_PROVIDER=cursor|grok|claude (see .github/agents/README.md).
+
+name: Coding agent
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number for the coding agent to implement now
+        required: true
+        type: string
+  issues:
+    types: [labeled]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+  actions: read
+
+jobs:
+  implement-now:
+    if: |
+      (github.event_name == 'workflow_dispatch') ||
+      (github.event_name == 'issues' && github.event.label.name == 'agent-now') ||
+      (github.event_name == 'issue_comment' &&
+        !github.event.issue.pull_request &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association) &&
+        (startsWith(github.event.comment.body, '/agent') ||
+         contains(github.event.comment.body, '/agent now')))
+    runs-on: ubuntu-latest
+    concurrency:
+      group: agent-issue-${{ github.event_name == 'workflow_dispatch' && github.event.inputs.issue_number || github.event.issue.number }}
+      cancel-in-progress: true
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+      AGENT_PROVIDER: ${{ vars.AGENT_PROVIDER || 'cursor' }}
+    steps:
+      - name: Resolve issue number
+        id: issue
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            n="${{ github.event.inputs.issue_number }}"
+          else
+            n="${{ github.event.issue.number }}"
+          fi
+          n=$(echo "$n" | tr -d '[:space:]#')
+          if ! printf '%s' "$n" | grep -Eq '^[0-9]+$'; then
+            echo "::error::Invalid issue number: $n"; exit 1
+          fi
+          echo "number=$n" >> "$GITHUB_OUTPUT"
+          echo "ISSUE=$n" >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+
+      - name: Clear stale needs-human
+        run: gh issue edit "$ISSUE" --remove-label "needs-human" || true
+
+      - name: Hand off to Cursor / Grok now
+        if: env.AGENT_PROVIDER == 'cursor' || env.AGENT_PROVIDER == 'grok'
+        run: |
+          body=$(printf '%s\n' \
+            "### Coding agent — work now (\`AGENT_PROVIDER=$AGENT_PROVIDER\`)" \
+            "" \
+            "**Immediate run requested** (trigger: \`${{ github.event_name }}\`)." \
+            "" \
+            "Implement issue #$ISSUE using:" \
+            "- \`.github/agents/prompts/coding-agent.md\`" \
+            "- root \`AGENTS.md\`" \
+            "" \
+            "Substitute \`\$ISSUE=$ISSUE\`, \`\$REPO=$GITHUB_REPOSITORY\`, \`\$PR_ASSIGNEE=${{ vars.PR_ASSIGNEE || 'KitheK' }}\`." \
+            "Open one **draft** PR, label it \`overnight-agent\`, **assign to \$PR_ASSIGNEE**, remove \`agent-now\` / \`overnight-queue\`." \
+            "If blocked, add \`needs-human\` and comment." \
+            "" \
+            "<!-- scorecard-agent-work-now issue=$ISSUE -->")
+          gh issue comment "$ISSUE" --body "$body"
+
+      - name: External provider owns the PR
+        if: env.AGENT_PROVIDER == 'cursor' || env.AGENT_PROVIDER == 'grok'
+        run: echo "Handed off #$ISSUE to $AGENT_PROVIDER."
+
+      - uses: actions/setup-node@v4
+        if: env.AGENT_PROVIDER == 'claude'
+        with:
+          node-version: "20"
+          cache: npm
+
+      - uses: anthropics/claude-code-action@v1
+        if: env.AGENT_PROVIDER == 'claude'
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ secrets.GH_PAT }}
+          plugin_marketplaces: |
+            https://github.com/anthropics/claude-plugins-official.git
+          plugins: |
+            security-guidance@claude-plugins-official
+          claude_args: >-
+            --allowedTools "Bash(npm:*),Bash(node:*),Bash(npx:*),Bash(git:*),Bash(gh:*),Bash(bash scripts/ci-local.sh),Bash(bash scripts/*),Edit,Write,Read,Glob,Grep,Task"
+          prompt: |
+            Follow .github/agents/prompts/coding-agent.md exactly.
+            Substitute $ISSUE=${{ steps.issue.outputs.number }}, $REPO=${{ github.repository }},
+            and $PR_ASSIGNEE=${{ vars.PR_ASSIGNEE || 'KitheK' }}.
+
+      - name: Fail if Claude opened no PR
+        if: always() && env.AGENT_PROVIDER == 'claude'
+        run: |
+          n=$ISSUE
+          if gh pr list --repo "$GITHUB_REPOSITORY" --search "Closes #$n" --state open --json number --jq 'length' | grep -qx '[1-9][0-9]*'; then
+            exit 0
+          fi
+          if gh pr list --repo "$GITHUB_REPOSITORY" --state open --json headRefName,number --jq "[.[] | select(.headRefName | startswith(\"issue-$n-\"))] | length" | grep -qx '[1-9][0-9]*'; then
+            exit 0
+          fi
+          if gh issue view "$n" --repo "$GITHUB_REPOSITORY" --json labels --jq '.labels[].name' | grep -qx needs-human; then
+            exit 0
+          fi
+          echo "::error::Claude finished without a PR or needs-human for #$n"; exit 1
