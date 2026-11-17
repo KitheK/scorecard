@@ -26,7 +26,7 @@ Descriptive project manuals only. Never grade. Never invent metrics or contribut
 ## Ordered workflow
 
 1. Stage A (profile) — see `interview.md`
-2. Bounded repo scan — see `references/analysis.md`
+2. Bounded repo scan — see `references/analysis.md`; **must** run architecture generator (see `references/analysis.md` § Architecture)
 3. Stages B–D at chosen depth
 4. Stage E look & feel — link specimens / `npx scorecard-kit look`; or E6 defaults
 5. Propose size Lite|Standard|Full; apply module gates from `references/project-profiles.md`
@@ -39,7 +39,7 @@ Descriptive project manuals only. Never grade. Never invent metrics or contribut
    Windows: clone to `$env:TEMP\scorecard-kit`, then `Copy-Item -Recurse` into `.\scorecard`.
    If `./scorecard` already exists, reuse it — do not wipe `authored` content.
    Write `theme.json` from Stage E / `references/theme-presets.md`.
-7. Fill `scorecard/content/*.json` with provenance tags (`confirmed` only later via Write → Review).
+7. Fill `scorecard/content/*.json` with provenance tags (`confirmed` only later via Write → Review). Before writing `architecture.json`, call `scanArchitectureGraph` + `buildArchitecture` from `src/generators/architecture.ts` (≥3 nodes, ≥2 edges, every node has `detail` and valid `path`); set `figureId` `ARCH_001` and add a manual `figure` or `architecture` block referencing it on Standard/Full.
 8. Redaction pass + `npx scorecard-kit check`
 9. Hand off: `cd scorecard && npx scorecard-kit dev` → Write mode. Point the author at `/demos` for specimen repo shapes if helpful.
 

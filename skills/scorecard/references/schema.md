@@ -36,6 +36,8 @@ Normative overhaul contracts: `docs/contracts/` (WS0). TypeScript types and `val
 
 `figureId`, `layout`, `nodes` (with optional `detail`, `tone`, `x`/`y`), `groups`, `edges`, `mermaid` (export only).
 
+Standard/Full: ≥3 nodes, ≥2 edges; every node needs `detail` for the interactive plate. Primary UI is SVG in `ArchitecturePlate` — not the mermaid string.
+
 ## Provenance
 
 - `confirmed` | `inferred` | `draft`

@@ -17,6 +17,7 @@
     "build": "tsc --noEmit && vite build",
     "test": "vitest run",
     "check": "node bin/scorecard.js check",
+    "architecture:generate": "vite-node src/scripts/generate-architecture.ts",
     "preview": "vite preview"
   },
   "dependencies": {

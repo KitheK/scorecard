@@ -3,8 +3,8 @@ import { ArchitecturePlate } from "../components/ArchitecturePlate";
 import { useContent } from "../lib/ContentContext";
 
 export function ScorecardPage() {
-  const { scorecard, run, decisions, stack } = useContent();
-  const showArch = scorecard.size !== "lite" && stack.parts.length >= 3;
+  const { scorecard, run, decisions, architecture } = useContent();
+  const showArch = scorecard.size !== "lite" && architecture.nodes.length >= 3;
 
   return (
     <main className="page">

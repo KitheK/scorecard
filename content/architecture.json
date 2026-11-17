@@ -1,22 +1,199 @@
 {
   "schemaVersion": 1,
+  "figureId": "ARCH_001",
+  "layout": "spine-lr",
   "overview": {
-    "text": "Skill interviews and scans; kit renders content; Write mode saves JSON; CLI launches and checks.",
+    "text": "What was built, what works, what doesn’t, and how to run it, readable in about two minutes.<br>",
     "provenance": "inferred",
     "source": "generated",
-    "evidence": "scorecard/package.json"
+    "evidence": "repo-scan"
   },
   "nodes": [
-    { "id": "skill", "label": "scorecard skill", "path": "skills/scorecard/SKILL.md", "group": "authoring" },
-    { "id": "kit", "label": "scorecard kit", "path": "scorecard/package.json", "group": "runtime" },
-    { "id": "content", "label": "content JSON", "path": "scorecard/content", "group": "data" },
-    { "id": "cli", "label": "scorecard CLI", "path": "scorecard/bin/scorecard.js", "group": "runtime" }
+    {
+      "id": "pkg",
+      "label": "Package",
+      "path": "package.json",
+      "group": "tooling",
+      "tone": "runtime",
+      "detail": {
+        "role": "Package",
+        "evidence": "package.json",
+        "summary": "Evidence path: package.json"
+      },
+      "x": 64,
+      "y": 56
+    },
+    {
+      "id": "app",
+      "label": "App shell",
+      "path": "src/App.tsx",
+      "group": "client",
+      "tone": "client",
+      "detail": {
+        "role": "App shell",
+        "evidence": "src/App.tsx",
+        "summary": "Evidence path: src/App.tsx"
+      },
+      "x": 232,
+      "y": 56
+    },
+    {
+      "id": "cli",
+      "label": "CLI",
+      "path": "bin/scorecard.js",
+      "group": "tooling",
+      "tone": "runtime",
+      "detail": {
+        "role": "CLI",
+        "evidence": "bin/scorecard.js",
+        "summary": "Evidence path: bin/scorecard.js"
+      },
+      "x": 64,
+      "y": 118
+    },
+    {
+      "id": "skill",
+      "label": "Agent skill",
+      "path": "skills/scorecard/SKILL.md",
+      "group": "authoring",
+      "tone": "service",
+      "detail": {
+        "role": "Agent skill",
+        "evidence": "skills/scorecard/SKILL.md",
+        "summary": "Evidence path: skills/scorecard/SKILL.md"
+      },
+      "x": 400,
+      "y": 56
+    },
+    {
+      "id": "content",
+      "label": "Content JSON",
+      "path": "content/manual.json",
+      "group": "data",
+      "tone": "data",
+      "detail": {
+        "role": "Content JSON",
+        "evidence": "content/manual.json",
+        "summary": "Evidence path: content/manual.json"
+      },
+      "x": 568,
+      "y": 56
+    },
+    {
+      "id": "vite",
+      "label": "Vite config",
+      "path": "vite.config.ts",
+      "group": "tooling",
+      "tone": "runtime",
+      "detail": {
+        "role": "Vite config",
+        "evidence": "vite.config.ts",
+        "summary": "Evidence path: vite.config.ts"
+      },
+      "x": 64,
+      "y": 180
+    },
+    {
+      "id": "generators",
+      "label": "Generators",
+      "path": "src/generators/architecture.ts",
+      "group": "generators",
+      "tone": "service",
+      "detail": {
+        "role": "Generators",
+        "evidence": "src/generators/architecture.ts",
+        "summary": "Evidence path: src/generators/architecture.ts"
+      },
+      "x": 736,
+      "y": 56
+    },
+    {
+      "id": "README_md",
+      "label": "README.md",
+      "path": "README.md",
+      "group": "repo",
+      "tone": "service",
+      "detail": {
+        "role": "README.md",
+        "evidence": "README.md",
+        "summary": "Evidence path: README.md"
+      },
+      "x": 904,
+      "y": 56
+    },
+    {
+      "id": "src_main_tsx",
+      "label": "src/main.tsx",
+      "path": "src/main.tsx",
+      "group": "repo",
+      "tone": "service",
+      "detail": {
+        "role": "src/main.tsx",
+        "evidence": "src/main.tsx",
+        "summary": "Evidence path: src/main.tsx"
+      },
+      "x": 904,
+      "y": 118
+    }
   ],
   "edges": [
-    { "from": "skill", "to": "content", "label": "fills" },
-    { "from": "skill", "to": "kit", "label": "scaffolds" },
-    { "from": "cli", "to": "kit", "label": "serves" },
-    { "from": "content", "to": "kit", "label": "drives" }
+    {
+      "from": "skill",
+      "to": "content",
+      "label": "fills"
+    },
+    {
+      "from": "content",
+      "to": "app",
+      "label": "drives"
+    },
+    {
+      "from": "cli",
+      "to": "app",
+      "label": "serves"
+    },
+    {
+      "from": "pkg",
+      "to": "app",
+      "label": "scripts"
+    },
+    {
+      "from": "skill",
+      "to": "pkg",
+      "label": "documents"
+    }
   ],
-  "mermaid": "flowchart LR\n  skill[skill] --> content[content]\n  skill --> kit[kit]\n  cli[cli] --> kit\n  content --> kit"
+  "groups": [
+    {
+      "id": "tooling",
+      "title": "Tooling",
+      "tone": "runtime"
+    },
+    {
+      "id": "client",
+      "title": "Client",
+      "tone": "client"
+    },
+    {
+      "id": "authoring",
+      "title": "Authoring",
+      "tone": "service"
+    },
+    {
+      "id": "data",
+      "title": "Data",
+      "tone": "data"
+    },
+    {
+      "id": "generators",
+      "title": "Generators",
+      "tone": "service"
+    },
+    {
+      "id": "repo",
+      "title": "Repo",
+      "tone": "service"
+    }
+  ],
+  "mermaid": "flowchart LR\n  pkg[\"Package\"]\n  app[\"App shell\"]\n  cli[\"CLI\"]\n  skill[\"Agent skill\"]\n  content[\"Content JSON\"]\n  vite[\"Vite config\"]\n  generators[\"Generators\"]\n  README_md[\"README.md\"]\n  src_main_tsx[\"src/main.tsx\"]\n  skill -->|fills| content\n  content -->|drives| app\n  cli -->|serves| app\n  pkg -->|scripts| app\n  skill -->|documents| pkg"
 }

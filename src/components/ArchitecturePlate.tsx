@@ -1,26 +1,52 @@
 import { useContent } from "../lib/ContentContext";
+import type { ArchitectureFile } from "../lib/schemas";
 import { Claim } from "./Claim";
+import { NouveauFrame, type FrameVariant } from "./nouveau";
+import { InteractiveArchitectureDiagram } from "./plates";
+import "./plates/architecture-plate.css";
 
-export function ArchitecturePlate() {
-  const { architecture, theme } = useContent();
-  const frame = theme.ornaments.plateFrame;
+export type ArchitecturePlateProps = {
+  /** When omitted, uses bundle from ContentContext. */
+  architecture?: ArchitectureFile;
+  compact?: boolean;
+  showOverview?: boolean;
+  showTopology?: boolean;
+};
+
+function frameVariant(raw: string): FrameVariant {
+  if (raw === "pavot30" || raw === "lys33" || raw === "halo01" || raw === "coins46") return raw;
+  return "coins46";
+}
+
+export function ArchitecturePlate({
+  architecture: architectureProp,
+  compact,
+  showOverview = true,
+  showTopology = false,
+}: ArchitecturePlateProps) {
+  const { architecture: ctxArch, theme } = useContent();
+  const architecture = architectureProp ?? ctxArch;
+  const frame = frameVariant(theme.ornaments.plateFrame);
+  const figureId = architecture.figureId ?? "ARCH_001";
+
+  if (!architecture.nodes.length) {
+    return (
+      <div className="architecture-plate architecture-plate--empty panel">
+        <p className="mono">Architecture diagram pending — run the agent architecture step.</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="frame-wrap" data-frame={frame}>
-      {frame !== "none" ? (
-        <p className="mono frame-ornament" style={{ marginTop: 0 }}>
-          Frame: {frame}
-        </p>
-      ) : null}
-      {architecture.overview ? <Claim claim={architecture.overview} /> : null}
-      <ul>
-        {architecture.nodes.map((n) => (
-          <li key={n.id}>
-            <strong>{n.label}</strong>
-            {n.path ? <span className="mono"> — {n.path}</span> : null}
-          </li>
-        ))}
-      </ul>
-      {architecture.mermaid ? <pre className="mermaid-block">{architecture.mermaid}</pre> : null}
-    </div>
+    <figure className="architecture-plate plate">
+      <p className="architecture-plate__label mono">{figureId}</p>
+      <NouveauFrame variant={frame} animate={theme.ornaments.footAnimate} scale={compact ? 0.85 : 1}>
+        {showOverview && architecture.overview ? <Claim claim={architecture.overview} /> : null}
+        <InteractiveArchitectureDiagram file={architecture} compact={compact} showTopology={showTopology} />
+      </NouveauFrame>
+    </figure>
   );
 }
+
+/** @deprecated alias — WS4 should import `InteractiveArchitectureDiagram` from `./plates`. */
+export { InteractiveArchitectureDiagram } from "./plates";
