@@ -17,6 +17,8 @@
     "build": "tsc --noEmit && vite build",
     "test": "vitest run",
     "check": "node bin/scorecard.js check",
+    "architecture:generate": "vite-node src/scripts/generate-architecture.ts",
+    "test:e2e": "playwright test",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -28,6 +30,7 @@
     "react-router-dom": "^7.9.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.49.1",
     "@types/node": "^22.13.10",
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",

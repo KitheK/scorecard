@@ -12,6 +12,7 @@ import assignmentRequirements from "../../content/dogfood/assignment-requirement
 import teamScorecard from "../../content/dogfood/team-scorecard.json";
 import teamRun from "../../content/dogfood/team-run.json";
 import teamPeople from "../../content/dogfood/team.json";
+import teamArchitecture from "../../content/dogfood/team-architecture.json";
 import noReadmeScorecard from "../../content/dogfood/no-readme-scorecard.json";
 import noReadmeRun from "../../content/dogfood/no-readme-run.json";
 
@@ -94,7 +95,10 @@ export function bundleForDemo(demo: DogfoodDemo): ContentBundle {
     requirements: demo.requirements ?? { schemaVersion: 1, items: [] },
     decisions: { schemaVersion: 1, decisions: [] },
     manual: { schemaVersion: 1, title: demo.title, parts: [], chapters: [] },
-    architecture: { schemaVersion: 1, nodes: [], edges: [] },
+    architecture:
+      demo.id === "team"
+        ? (teamArchitecture as ContentBundle["architecture"])
+        : { schemaVersion: 1, nodes: [], edges: [] },
     branches: { schemaVersion: 1, form: "river", events: [] },
     stack: { schemaVersion: 1, parts: [] },
     apis: { schemaVersion: 1, routes: [] },
