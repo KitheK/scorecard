@@ -498,7 +498,7 @@ scorecard/
 ├─ .agents/skills/          copy for Codex and other .agents readers
 ├─ .claude/skills/          copy for Claude Code
 ├─ .github/skills/ agents/  copy and custom agent for GitHub Copilot
-├─ .cursor-plugin/          Cursor plugin + marketplace manifests (uses logo.svg)
+├─ .cursor-plugin/          Cursor plugin + marketplace manifests (uses logo.png)
 ├─ .claude-plugin/          Claude Code plugin + marketplace manifests, icon.png
 ├─ plugin.json              Agent Plugins manifest
 ├─ bin/scorecard.js         the CLI
@@ -517,7 +517,7 @@ scorecard/
 - **Code:** [MIT](LICENSE) © 2026 Kithe.
 - **Ornaments:** traced from **Alphonse Mucha, *Documents décoratifs* (1902)**: plate 30 (the wild-rose medallion and seed pods in the logo), plate 33 (the lily frieze in these dividers), plate 46 (the tile-and-knot corners around the install guides) and plate 01. The plates are in the public domain. Notes on the traced components are in [`LICENSES/ORNAMENTS.txt`](LICENSES/ORNAMENTS.txt).
 - **Type:** **Libretto Paléologue** (the wordmark above), drawn after Jean de Paléologue (PAL), *[OFL](public/fonts/LibrettoPaleologue-OFL.txt)*; [Newsreader](public/fonts/Newsreader-OFL.txt) and [Source Sans 3](public/fonts/SourceSans3-OFL.txt), SIL OFL; Departure Mono by Helena Zhang, [SIL OFL](public/fonts/LICENSE). See [`LICENSES/FONTS.txt`](LICENSES/FONTS.txt).
-- **Logo:** [`logo.svg`](logo.svg) (with [512](docs/assets/logo-512.png) · [256](docs/assets/logo-256.png) · [128](docs/assets/logo-128.png) px PNGs). The earlier mark is kept at [`docs/assets/logo-legacy.svg`](docs/assets/logo-legacy.svg).
+- **Logo:** [`logo.png`](logo.png) (with [`logo.svg`](logo.svg) vector source and [512](docs/assets/logo-512.png) · [256](docs/assets/logo-256.png) · [128](docs/assets/logo-128.png) px PNGs in `docs/assets/`).
 
 <p align="center"><img src="docs/assets/divider-lys33-foot.svg" width="100%" alt=""></p>
 
