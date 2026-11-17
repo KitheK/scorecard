@@ -1,22 +1,195 @@
 {
   "schemaVersion": 1,
+  "figureId": "ARCH_001",
+  "layout": "spine-lr",
   "overview": {
-    "text": "Skill interviews and scans; kit renders content; Write mode saves JSON; CLI launches and checks.",
+    "text": "Descriptive project manuals for any codebase.",
     "provenance": "inferred",
     "source": "generated",
-    "evidence": "scorecard/package.json"
+    "evidence": "repo-scan"
   },
   "nodes": [
-    { "id": "skill", "label": "scorecard skill", "path": "skills/scorecard/SKILL.md", "group": "authoring" },
-    { "id": "kit", "label": "scorecard kit", "path": "scorecard/package.json", "group": "runtime" },
-    { "id": "content", "label": "content JSON", "path": "scorecard/content", "group": "data" },
-    { "id": "cli", "label": "scorecard CLI", "path": "scorecard/bin/scorecard.js", "group": "runtime" }
+    {
+      "id": "skill",
+      "label": "Agent skill",
+      "path": "skills/scorecard/SKILL.md",
+      "group": "authoring",
+      "tone": "agent",
+      "detail": {
+        "role": "Interview, scan, content workflow",
+        "evidence": "skills/scorecard/SKILL.md"
+      },
+      "layoutW": 124,
+      "x": 54,
+      "y": 92
+    },
+    {
+      "id": "cli",
+      "label": "CLI",
+      "path": "bin/scorecard.js",
+      "group": "delivery",
+      "tone": "runtime",
+      "detail": {
+        "role": "dev, build, check commands",
+        "evidence": "bin/scorecard.js"
+      },
+      "layoutW": 132,
+      "x": 226,
+      "y": 24
+    },
+    {
+      "id": "dev-server",
+      "label": "Vite dev",
+      "path": "vite.config.ts",
+      "group": "delivery",
+      "tone": "edge",
+      "detail": {
+        "role": "Local dev server and Write saves",
+        "evidence": "vite.config.ts · vite-plugin-scorecard-save.ts"
+      },
+      "layoutW": 132,
+      "x": 226,
+      "y": 92
+    },
+    {
+      "id": "build",
+      "label": "Build output",
+      "path": "package.json",
+      "group": "delivery",
+      "tone": "runtime",
+      "detail": {
+        "role": "Production bundle to dist/",
+        "evidence": "npm run build"
+      },
+      "layoutW": 132,
+      "x": 226,
+      "y": 160
+    },
+    {
+      "id": "renderer",
+      "label": "Guide renderer",
+      "path": "src/App.tsx",
+      "group": "application",
+      "tone": "client",
+      "detail": {
+        "role": "React manual and scorecard pages",
+        "evidence": "src/App.tsx"
+      },
+      "layoutW": 184,
+      "x": 406,
+      "y": 24
+    },
+    {
+      "id": "plates",
+      "label": "Interactive plates",
+      "path": "src/components/plates/kit.tsx",
+      "group": "application",
+      "tone": "service",
+      "detail": {
+        "role": "SVG architecture figures in NouveauFrame",
+        "evidence": "src/components/plates/"
+      },
+      "layoutW": 184,
+      "x": 406,
+      "y": 92
+    },
+    {
+      "id": "generators",
+      "label": "Generators",
+      "path": "src/generators/architecture.ts",
+      "group": "application",
+      "tone": "service",
+      "detail": {
+        "role": "Architecture, timeline, contracts",
+        "evidence": "src/generators/ · src/lib/schemas.ts"
+      },
+      "layoutW": 184,
+      "x": 406,
+      "y": 160
+    },
+    {
+      "id": "content",
+      "label": "Content JSON",
+      "path": "content/manual.json",
+      "group": "data",
+      "tone": "data",
+      "detail": {
+        "role": "Authoritative content bundle",
+        "evidence": "content/*.json"
+      },
+      "layoutW": 132,
+      "x": 638,
+      "y": 89
+    }
   ],
   "edges": [
-    { "from": "skill", "to": "content", "label": "fills" },
-    { "from": "skill", "to": "kit", "label": "scaffolds" },
-    { "from": "cli", "to": "kit", "label": "serves" },
-    { "from": "content", "to": "kit", "label": "drives" }
+    {
+      "from": "skill",
+      "to": "content",
+      "label": "fills"
+    },
+    {
+      "from": "skill",
+      "to": "generators",
+      "label": "invokes"
+    },
+    {
+      "from": "generators",
+      "to": "content",
+      "label": "writes"
+    },
+    {
+      "from": "cli",
+      "to": "dev-server",
+      "label": "serves"
+    },
+    {
+      "from": "dev-server",
+      "to": "renderer",
+      "label": "hosts"
+    },
+    {
+      "from": "content",
+      "to": "renderer",
+      "label": "drives"
+    },
+    {
+      "from": "generators",
+      "to": "plates",
+      "label": "layout"
+    },
+    {
+      "from": "plates",
+      "to": "renderer",
+      "label": "embeds"
+    },
+    {
+      "from": "cli",
+      "to": "build",
+      "label": "builds"
+    }
   ],
-  "mermaid": "flowchart LR\n  skill[skill] --> content[content]\n  skill --> kit[kit]\n  cli[cli] --> kit\n  content --> kit"
+  "groups": [
+    {
+      "id": "authoring",
+      "title": "Authoring",
+      "tone": "agent"
+    },
+    {
+      "id": "delivery",
+      "title": "Delivery",
+      "tone": "runtime"
+    },
+    {
+      "id": "application",
+      "title": "Application",
+      "tone": "client"
+    },
+    {
+      "id": "data",
+      "title": "Data",
+      "tone": "data"
+    }
+  ],
+  "mermaid": "flowchart LR\n  skill[\"Agent skill\"]\n  cli[\"CLI\"]\n  dev-server[\"Vite dev\"]\n  build[\"Build output\"]\n  renderer[\"Guide renderer\"]\n  plates[\"Interactive plates\"]\n  generators[\"Generators\"]\n  content[\"Content JSON\"]\n  skill -->|fills| content\n  skill -->|invokes| generators\n  generators -->|writes| content\n  cli -->|serves| dev-server\n  dev-server -->|hosts| renderer\n  content -->|drives| renderer\n  generators -->|layout| plates\n  plates -->|embeds| renderer\n  cli -->|builds| build"
 }

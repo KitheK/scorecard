@@ -2,7 +2,25 @@ import type { FontPackManifest, ThemeJson } from "../lib/schemas";
 import { resolvedFaceIds, resolveThemeFaces, stackCssFamily } from "../lib/fontCatalog";
 import { resolveFontPack } from "../lib/fontPacks";
 
+export type ReadingTheme = "light" | "dark";
+
+export const READING_THEME_STORAGE_KEY = "scorecard.readingTheme";
+
 const STYLE_ID = "scorecard-font-pack-faces";
+
+const DARK_READING_TOKENS: ThemeJson["tokens"] = {
+  canvas: "#0b1118",
+  ink: "#f1f3f6",
+  action: "#5b8cff",
+  rule: "rgba(241, 243, 246, 0.22)",
+  muted: "#9aa3ad",
+};
+
+export function readStoredReadingTheme(): ReadingTheme {
+  if (typeof window === "undefined") return "light";
+  const stored = window.sessionStorage.getItem(READING_THEME_STORAGE_KEY);
+  return stored === "dark" ? "dark" : "light";
+}
 
 function faceRule(face: FontPackManifest["faces"]["display"], url: string): string {
   const weight = face.weight != null ? `font-weight: ${face.weight};\n` : "";
@@ -29,18 +47,23 @@ export function applyFontPackFaces(faces: FontPackManifest["faces"]) {
   el.textContent = rules;
 }
 
-export function applyTheme(theme: ThemeJson, packOverride?: FontPackManifest) {
+export function applyTheme(
+  theme: ThemeJson,
+  reading: ReadingTheme = "light",
+  packOverride?: FontPackManifest,
+) {
   const root = document.documentElement;
   const pack = packOverride ?? resolveFontPack(theme);
   const faces = resolveThemeFaces(theme, pack);
   const faceIds = resolvedFaceIds(theme, pack);
   applyFontPackFaces(faces);
 
-  root.style.setProperty("--canvas", theme.tokens.canvas);
-  root.style.setProperty("--ink", theme.tokens.ink);
-  root.style.setProperty("--action", theme.tokens.action);
-  root.style.setProperty("--rule", theme.tokens.rule);
-  root.style.setProperty("--muted", theme.tokens.muted);
+  const tokens = reading === "dark" ? { ...theme.tokens, ...DARK_READING_TOKENS } : theme.tokens;
+  root.style.setProperty("--canvas", tokens.canvas);
+  root.style.setProperty("--ink", tokens.ink);
+  root.style.setProperty("--action", tokens.action);
+  root.style.setProperty("--rule", tokens.rule);
+  root.style.setProperty("--muted", tokens.muted);
   root.style.setProperty("--font-display", stackCssFamily(faceIds.display));
   root.style.setProperty("--font-body", stackCssFamily(faceIds.body));
   root.style.setProperty("--font-ui", stackCssFamily(faceIds.ui));
@@ -49,4 +72,5 @@ export function applyTheme(theme: ThemeJson, packOverride?: FontPackManifest) {
   root.dataset.tone = theme.tone;
   root.dataset.fontPack = pack.packId;
   root.dataset.ornamentPalette = theme.ornaments.ornamentPalette;
+  root.dataset.theme = reading;
 }

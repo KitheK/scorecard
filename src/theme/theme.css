@@ -250,12 +250,15 @@ a {
 
 .look-grid button,
 .write-side button,
-.write-side select {
+.write-side select,
+.interview-choice,
+.interview-btn {
   font: inherit;
   padding: 0.4rem 0.55rem;
   border: 1px solid var(--rule);
   background: var(--canvas);
   cursor: pointer;
+  border-radius: 0.4rem;
 }
 
 .font-role-picker {
