@@ -1,4 +1,19 @@
 {
   "schemaVersion": 1,
-  "items": []
+  "items": [
+    {
+      "id": "R1",
+      "text": "Descriptive status only — no grades",
+      "where": "skills/scorecard/SKILL.md",
+      "provenance": "draft",
+      "source": "generated"
+    },
+    {
+      "id": "R2",
+      "text": "Every manual block type in schema must render",
+      "where": "src/components/ManualBlock.tsx",
+      "provenance": "draft",
+      "source": "generated"
+    }
+  ]
 }

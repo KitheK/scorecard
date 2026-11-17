@@ -129,7 +129,7 @@ export function ArchitectureDiagramSvg({
     return () => ro.disconnect();
   }, []);
 
-  const narrow = canvasW > 0 && canvasW < 520;
+  const narrow = canvasW > 0 && canvasW < 560;
   const m = useMemo(() => {
     const fallback =
       typeof window !== "undefined" ? Math.min(720, Math.max(200, window.innerWidth - 32)) : 640;

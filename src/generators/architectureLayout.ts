@@ -125,6 +125,17 @@ export function metricsForCanvas(file: ArchitectureFile, canvasWidthPx: number):
     }
   }
 
+  const verifyLayout = applyArchitectureLayout(file, m, { narrowStack: narrow });
+  const vbW = tightViewBox(verifyLayout.nodes, m).split(/\s+/).map(Number)[2];
+  const meet = target / Math.max(vbW, 1);
+  if (meet > 0 && m.titleSize * meet < 11.02) {
+    m = {
+      ...m,
+      titleSize: Math.min(26, Math.ceil(11.2 / meet)),
+      subSize: Math.max(10, Math.min(25, Math.ceil(11.2 / meet) - 1)),
+    };
+  }
+
   return m;
 }
 

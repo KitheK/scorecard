@@ -1,4 +1,19 @@
 {
   "schemaVersion": 1,
-  "people": []
+  "people": [
+    {
+      "name": "Kit author",
+      "role": "Manual generator",
+      "areas": ["skill", "CLI", "UI"],
+      "provenance": "draft",
+      "source": "generated"
+    },
+    {
+      "name": "Cloud agents",
+      "role": "Parallel workstreams",
+      "areas": ["contracts", "shell", "plates", "blocks"],
+      "provenance": "draft",
+      "source": "generated"
+    }
+  ]
 }

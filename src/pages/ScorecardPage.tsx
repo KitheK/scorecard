@@ -39,6 +39,11 @@ export function ScorecardPage() {
                 <Link to="/write">Write mode</Link> — confirm claims and look tokens on loopback only
               </li>
             ) : null}
+            {scorecard.size === "full" ? (
+              <li>
+                <Link to="/">Guide home</Link> — Libretto-style essay and architecture figure
+              </li>
+            ) : null}
           </ul>
         </section>
       ) : null}

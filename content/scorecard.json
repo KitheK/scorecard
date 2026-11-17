@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
-  "size": "standard",
+  "size": "full",
+  "projectName": "Scorecard",
   "job": {
     "text": "Scorecard turns a project into a short descriptive site: what was built, what works, what does not, and how to run it.",
     "provenance": "draft",
@@ -18,9 +19,15 @@
   },
   "features": [
     {
-      "name": "Scorecard summary page",
+      "name": "Libretto-style home (full)",
       "status": "works",
-      "note": "Always present",
+      "note": "Essay, plate, desk, contents",
+      "provenance": "draft",
+      "source": "generated"
+    },
+    {
+      "name": "Rich block renderer",
+      "status": "works",
       "provenance": "draft",
       "source": "generated"
     },
@@ -34,6 +41,7 @@
     {
       "name": "Live product embed",
       "status": "stubbed",
+      "note": "Framed screenshots/clips only in v1",
       "provenance": "draft",
       "source": "generated"
     }
@@ -54,7 +62,7 @@
     "source": "generated"
   },
   "proof": {
-    "text": "Run npx scorecard-kit dev and open /.",
+    "text": "Run npx scorecard-kit dev and open / for the full home or /scorecard for status.",
     "provenance": "draft",
     "source": "generated"
   },

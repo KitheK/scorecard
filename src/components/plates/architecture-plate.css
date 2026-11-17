@@ -157,6 +157,9 @@
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 12px;
   letter-spacing: 0.04em;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .detail-hint {
@@ -302,6 +305,45 @@
     border-left: none;
     border-top: 1px dashed var(--rule, #d0d0d0);
     padding: 0.85rem 0.35rem 0.5rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .architecture-plate__frame-host,
+  .architecture-plate__nouveau.nv-frame {
+    min-width: min(100%, 260px);
+    width: 100%;
+  }
+
+  .architecture-plate__nouveau.nv-frame {
+    min-height: 11.5rem;
+  }
+
+  .architecture-plate .nv-frame__body {
+    min-height: 10.5rem;
+  }
+
+  .arch-diagram-chrome {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .arch-diagram-chrome__legend {
+    display: none;
+  }
+
+  .arch-diagram-chrome__tag {
+    margin-left: 0;
+    align-self: flex-start;
+  }
+
+  .home-hero .architecture-plate__nouveau .nv-frame__body {
+    padding-inline: 0.35rem;
+  }
+
+  .interactive-plate__canvas {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
 

@@ -83,9 +83,20 @@ export function ManualLayout({ children }: { children: ReactNode }) {
           ))}
         </nav>
         <nav className="sidebar-util mono no-print" aria-label="Guide utilities">
-          <NavLink to="/" end tabIndex={tocOpen ? undefined : -1} onClick={() => setTocOpen(false)}>
-            Kit overview
-          </NavLink>
+          {scorecard.size === "full" ? (
+            <NavLink to="/" end tabIndex={tocOpen ? undefined : -1} onClick={() => setTocOpen(false)}>
+              Home
+            </NavLink>
+          ) : (
+            <NavLink to="/" end tabIndex={tocOpen ? undefined : -1} onClick={() => setTocOpen(false)}>
+              Kit overview
+            </NavLink>
+          )}
+          {scorecard.size === "full" ? (
+            <NavLink to="/scorecard" tabIndex={tocOpen ? undefined : -1} onClick={() => setTocOpen(false)}>
+              Summary
+            </NavLink>
+          ) : null}
           <NavLink to="/contents" tabIndex={tocOpen ? undefined : -1} onClick={() => setTocOpen(false)}>
             Contents
           </NavLink>
@@ -96,8 +107,18 @@ export function ManualLayout({ children }: { children: ReactNode }) {
             Export
           </NavLink>
           {import.meta.env.DEV ? (
+            <NavLink to="/interview" tabIndex={tocOpen ? undefined : -1} onClick={() => setTocOpen(false)}>
+              Interview
+            </NavLink>
+          ) : null}
+          {import.meta.env.DEV ? (
             <NavLink to="/write" tabIndex={tocOpen ? undefined : -1} onClick={() => setTocOpen(false)}>
               Write
+            </NavLink>
+          ) : null}
+          {import.meta.env.DEV ? (
+            <NavLink to="/dev/desk" tabIndex={tocOpen ? undefined : -1} onClick={() => setTocOpen(false)}>
+              Desk lab
             </NavLink>
           ) : null}
         </nav>
@@ -139,9 +160,11 @@ export function ManualLayout({ children }: { children: ReactNode }) {
         <div id="manual-main">
           <PageEnter>{children}</PageEnter>
         </div>
-        <footer className="manual-colophon mono no-print">
-          {PLATFORM_ATTRIBUTION} · {manualTitle}
-        </footer>
+        {pathname === "/" && scorecard.size === "full" ? null : (
+          <footer className="manual-colophon mono no-print">
+            {PLATFORM_ATTRIBUTION} · {manualTitle}
+          </footer>
+        )}
       </div>
       <div id="manual-toc" className="sr-only">
         Table of contents drawer

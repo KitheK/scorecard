@@ -164,11 +164,13 @@ async function checkPlate(page: Page, plateSelector: string, desktop: boolean): 
         errors.push("diagram escapes frame body horizontally");
       }
 
-    if (desktop) {
-      const minFrameW = Math.min(280, window.innerWidth - 48);
-      const minFrameH = 140;
-      if (frame.offsetHeight < minFrameH || frame.offsetWidth < minFrameW) errors.push("frame dimensions too small");
-    }
+      if (desktop) {
+        const minFrameW = Math.min(280, window.innerWidth - 48);
+        const minFrameH = 140;
+        if (frame.offsetHeight < minFrameH || frame.offsetWidth < minFrameW) {
+          errors.push("frame dimensions too small");
+        }
+      }
 
       return { ok: errors.length === 0, errors, minFontPx, diagramWidthRatio };
     },
@@ -200,7 +202,7 @@ for (const [name, width] of [
   const desktop = width >= 1024;
   test(`kit architecture plate @ ${name}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
-    await openArch(page, "/");
+    await openArch(page, "/scorecard");
     const result = await checkPlate(page, "#arch .architecture-plate__nouveau", desktop);
     expect(result.errors, result.errors.join("; ")).toEqual([]);
     expect(result.minFontPx).toBeGreaterThanOrEqual(11);
