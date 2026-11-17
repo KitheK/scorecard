@@ -3,6 +3,12 @@
   "packId": "editorial-plain",
   "label": "Newsreader · Departure",
   "license": "LICENSES/FONTS.txt",
+  "defaultFaceIds": {
+    "display": "newsreader",
+    "body": "newsreader",
+    "ui": "source-sans-3",
+    "mono": "departure"
+  },
   "faces": {
     "display": {
       "family": "Newsreader",

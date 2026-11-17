@@ -217,6 +217,18 @@ function cmdCheck() {
   if (existsSync(themePath)) {
     try {
       const theme = JSON.parse(readFileSync(themePath, "utf8"));
+      const catalogPath = join(root, "public/fonts/catalog.json");
+      const catalog = existsSync(catalogPath) ? JSON.parse(readFileSync(catalogPath, "utf8")) : {};
+      for (const [role, faceId] of Object.entries(theme.fontRoles ?? {})) {
+        const woff2 = catalog[faceId];
+        if (!woff2) {
+          console.error(`theme.fontRoles.${role}: unknown face ${faceId}`);
+          errors++;
+        } else if (!publicPathExists(woff2)) {
+          console.error(`theme.fontRoles.${role}: missing ${woff2}`);
+          errors++;
+        }
+      }
       const packId = theme.fontPackId ?? "libretto-default";
       const manifestPath = join(root, "font-packs", packId, "manifest.json");
       if (!existsSync(manifestPath)) {

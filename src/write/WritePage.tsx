@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { useContent } from "../lib/ContentContext";
 import { authorConfirm, markAuthored } from "../lib/provenance";
 import { BUILTIN_FONT_PACKS, FONT_PACK_OPTIONS, withFontPack } from "../lib/fontPacks";
+import { FontRolePicker } from "./FontRolePicker";
 import { themePresets, type BuiltinFontPackId, type ThemeJson, type ThemeScheme } from "../lib/schemas";
 
 async function saveFile(file: string, data: unknown) {
@@ -167,16 +168,7 @@ function LookPanel({ theme, onChange }: { theme: ThemeJson; onChange: (t: ThemeJ
         >
           {BUILTIN_FONT_PACKS[opt.id].label}
           <span className="look-pack-blurb">{opt.blurb}</span>
-          <img
-            src={
-              opt.id === "libretto-default"
-                ? "/previews/fonts/specimen-AZ.png"
-                : "/previews/fonts/pack-editorial-plain.png"
-            }
-            alt=""
-            width={160}
-            style={{ display: "block", marginTop: "0.25rem" }}
-          />
+          <img src={opt.specimen} alt="" width={160} style={{ display: "block", marginTop: "0.25rem" }} />
         </button>
       ))}
       <p>Scheme</p>
@@ -190,6 +182,7 @@ function LookPanel({ theme, onChange }: { theme: ThemeJson; onChange: (t: ThemeJ
           {s}
         </button>
       ))}
+      <FontRolePicker theme={theme} onChange={onChange} />
       {packId === "libretto-default" ? (
         <>
           <p>Paléologue variant</p>

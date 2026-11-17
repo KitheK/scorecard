@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { applyFontPackFaces } from "../theme/applyTheme";
+import { resolveThemeFaces } from "./fontCatalog";
 import { BUILTIN_FONT_PACKS, resolveFontPack, withFontPack } from "./fontPacks";
-import { themePresets } from "./schemas";
+import { themePresets, validateTheme } from "./schemas";
 
 describe("font packs", () => {
   it("resolves built-in libretto-default", () => {
@@ -19,9 +20,24 @@ describe("font packs", () => {
 
   it("applyFontPackFaces emits @font-face rules", () => {
     if (typeof document === "undefined") return;
-    applyFontPackFaces(BUILTIN_FONT_PACKS["editorial-plain"]);
+    const pack = BUILTIN_FONT_PACKS["editorial-plain"];
+    applyFontPackFaces(resolveThemeFaces(themePresets("libretto"), pack));
     const el = document.getElementById("scorecard-font-pack-faces");
     expect(el?.textContent).toContain("Newsreader");
     expect(el?.textContent).toContain("woff2");
+  });
+
+  it("making-software pack defaults to literata", () => {
+    const pack = BUILTIN_FONT_PACKS["making-software"];
+    const faces = resolveThemeFaces(themePresets("libretto", "manual"), pack);
+    expect(faces.body.family).toBe("Literata");
+    expect(pack.substitutions?.display?.intended).toContain("Arizona");
+  });
+
+  it("fontRoles override body", () => {
+    const pack = resolveFontPack(themePresets("libretto"));
+    const faces = resolveThemeFaces({ ...themePresets("libretto"), fontRoles: { body: "lora" } }, pack);
+    expect(faces.body.family).toBe("Lora");
+    expect(validateTheme({ ...themePresets("libretto"), fontRoles: { body: "lora" } })).toEqual([]);
   });
 });

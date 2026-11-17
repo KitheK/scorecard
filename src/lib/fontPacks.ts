@@ -1,11 +1,13 @@
 import type { BuiltinFontPackId, FontPackManifest, ThemeJson } from "./schemas";
 
-import librettoDefault from "../../font-packs/libretto-default/manifest.json";
 import editorialPlain from "../../font-packs/editorial-plain/manifest.json";
+import librettoDefault from "../../font-packs/libretto-default/manifest.json";
+import makingSoftware from "../../font-packs/making-software/manifest.json";
 
 export const BUILTIN_FONT_PACKS: Record<BuiltinFontPackId, FontPackManifest> = {
   "libretto-default": librettoDefault as FontPackManifest,
   "editorial-plain": editorialPlain as FontPackManifest,
+  "making-software": makingSoftware as FontPackManifest,
   custom: {
     schemaVersion: 1,
     packId: "custom",
@@ -20,9 +22,10 @@ export const BUILTIN_FONT_PACKS: Record<BuiltinFontPackId, FontPackManifest> = {
   },
 };
 
-export const FONT_PACK_OPTIONS: { id: BuiltinFontPackId; blurb: string }[] = [
-  { id: "libretto-default", blurb: "Paléologue display · Departure mono" },
-  { id: "editorial-plain", blurb: "Newsreader display · editorial" },
+export const FONT_PACK_OPTIONS: { id: BuiltinFontPackId; blurb: string; specimen: string }[] = [
+  { id: "libretto-default", blurb: "Paléologue · Departure", specimen: "/previews/fonts/specimen-AZ.png" },
+  { id: "editorial-plain", blurb: "Newsreader · Departure", specimen: "/previews/fonts/pack-editorial-plain.png" },
+  { id: "making-software", blurb: "Literata · Departure (MS editorial)", specimen: "/previews/fonts/pack-making-software.png" },
 ];
 
 export function resolveFontPack(theme: ThemeJson): FontPackManifest {
@@ -32,7 +35,6 @@ export function resolveFontPack(theme: ThemeJson): FontPackManifest {
   return { ...BUILTIN_FONT_PACKS.custom, packId: id, label: id };
 }
 
-/** Map legacy theme font enums to pack ids when fontPackId is absent. */
 export function inferFontPackId(theme: ThemeJson): string {
   if (theme.fontPackId) return theme.fontPackId;
   if (theme.fonts.display === "paleologue" || theme.fonts.display === "paleologue-poster") {
@@ -42,7 +44,6 @@ export function inferFontPackId(theme: ThemeJson): string {
 }
 
 export function withFontPack(theme: ThemeJson, packId: BuiltinFontPackId): ThemeJson {
-  const pack = BUILTIN_FONT_PACKS[packId];
   const display =
     packId === "libretto-default"
       ? theme.fonts.display === "paleologue"
@@ -52,6 +53,7 @@ export function withFontPack(theme: ThemeJson, packId: BuiltinFontPackId): Theme
   return {
     ...theme,
     fontPackId: packId,
+    fontRoles: undefined,
     fonts: {
       display,
       body: "newsreader",

@@ -3,6 +3,12 @@
   "packId": "libretto-default",
   "label": "Paléologue · Departure",
   "license": "LICENSES/FONTS.txt",
+  "defaultFaceIds": {
+    "display": "paleologue-poster",
+    "body": "newsreader",
+    "ui": "source-sans-3",
+    "mono": "departure"
+  },
   "faces": {
     "display": {
       "family": "Libretto Paléologue Poster",

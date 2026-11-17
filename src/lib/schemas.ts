@@ -26,7 +26,39 @@ export type FrameVariant = "coins46" | "pavot30" | "lys33" | "halo01" | "none";
 export type FriezeVariant = "lys33" | "pavot30" | "none";
 export type RailVariant = "pavot30" | "band01" | "none";
 
-export type BuiltinFontPackId = "libretto-default" | "editorial-plain" | "custom";
+export type BuiltinFontPackId = "libretto-default" | "editorial-plain" | "making-software" | "custom";
+
+export type FontRole = "display" | "body" | "ui" | "mono";
+
+/** Self-hosted catalog face (§4.4 extension, WS5). */
+export type FontFaceId =
+  | "paleologue-poster"
+  | "paleologue"
+  | "newsreader"
+  | "literata"
+  | "fraunces"
+  | "source-serif-4"
+  | "lora"
+  | "source-sans-3"
+  | "inter"
+  | "ibm-plex-sans"
+  | "departure"
+  | "jetbrains-mono"
+  | "ibm-plex-mono";
+
+export type ThemeFontRoles = Partial<Record<FontRole, FontFaceId>>;
+
+export type FontSubstitutionNote = {
+  intended: string;
+  bundledFaceId: FontFaceId;
+  reason: string;
+};
+
+export type FontProprietarySlot = {
+  intended: string;
+  dropPath: string;
+  instructions: string;
+};
 
 export type FontFaceRef = {
   family: string;
@@ -47,6 +79,12 @@ export type FontPackManifest = {
     ui: FontFaceRef;
     mono: FontFaceRef;
   };
+  /** Preferred catalog ids per role (overridable via `theme.fontRoles`). */
+  defaultFaceIds?: Partial<Record<FontRole, FontFaceId>>;
+  /** When bundled faces stand in for proprietary sources (e.g. Making Software). */
+  substitutions?: Partial<Record<FontRole, FontSubstitutionNote>>;
+  /** Where licensees may drop vendor WOFF2 files. */
+  proprietarySlots?: Partial<Record<FontRole, FontProprietarySlot>>;
 };
 
 /** On-disk layout for a traced custom pack (§4.5). */
@@ -86,6 +124,8 @@ export type ThemeJson = {
   tone: "manual" | "plain" | "poster";
   /** When set, `fonts` enums are shortcuts resolved via the pack manifest. */
   fontPackId?: BuiltinFontPackId | (string & {});
+  /** Per-role face picks from the kit catalog; overrides pack defaults. */
+  fontRoles?: ThemeFontRoles;
   tokens: { canvas: string; ink: string; action: string; rule: string; muted: string };
   fonts: {
     display: "paleologue" | "paleologue-poster";
@@ -465,10 +505,31 @@ function isIso8601(s: string): boolean {
   return !Number.isNaN(Date.parse(s));
 }
 
+export const FONT_FACE_IDS: FontFaceId[] = [
+  "paleologue-poster",
+  "paleologue",
+  "newsreader",
+  "literata",
+  "fraunces",
+  "source-serif-4",
+  "lora",
+  "source-sans-3",
+  "inter",
+  "ibm-plex-sans",
+  "departure",
+  "jetbrains-mono",
+  "ibm-plex-mono",
+];
+
 export function validateTheme(t: ThemeJson): string[] {
   const errors: string[] = [];
   if (t.schemaVersion !== SCHEMA_VERSION) errors.push(`theme schemaVersion ${t.schemaVersion}`);
   if (!t.tokens?.canvas || !t.tokens?.ink || !t.tokens?.action) errors.push("theme.tokens incomplete");
+  for (const [role, faceId] of Object.entries(t.fontRoles ?? {})) {
+    if (!FONT_FACE_IDS.includes(faceId as FontFaceId)) {
+      errors.push(`theme.fontRoles.${role}: unknown face ${faceId}`);
+    }
+  }
   return errors;
 }
 

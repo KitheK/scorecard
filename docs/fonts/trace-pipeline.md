@@ -8,8 +8,22 @@ Scorecard can **swap built-in font packs** via `theme.json` → `fontPackId`, an
 |----------|---------|--------|
 | `libretto-default` | Libretto Paléologue Poster (+ outline variant in Look) | Default kit stack |
 | `editorial-plain` | Newsreader | Same body / UI / mono as Libretto |
+| `making-software` | Literata (Arizona Mix substitute) | Departure mono; see `font-packs/making-software/README.md` |
 
 Manifests live in `font-packs/<packId>/manifest.json` (§4.4). Web assets stay in `public/fonts/` or `public/font-packs/`.
+
+### Per-role overrides
+
+Set individual roles without changing the whole pack:
+
+```json
+{
+  "fontPackId": "libretto-default",
+  "fontRoles": { "body": "source-serif-4", "mono": "jetbrains-mono" }
+}
+```
+
+Use Write → Look for a live preview; ids must appear in `public/fonts/catalog.json`.
 
 ## Create a pack from a reference sheet
 
