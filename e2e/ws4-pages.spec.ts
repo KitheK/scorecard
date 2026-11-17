@@ -19,7 +19,8 @@ for (const vp of VIEWPORTS) {
     await page.goto("/", { waitUntil: "networkidle" });
     await expect(page.locator(".home-hero")).toBeVisible();
     await expect(page.locator(".architecture-plate svg.arch-diagram")).toBeVisible({ timeout: 15_000 });
-    await expect(page.locator(".generic-desk")).toBeVisible();
+    await expect(page.locator(".home-plate .architecture-plate")).toBeVisible();
+    await expect(page.locator(".home-desk-ornaments")).toBeVisible();
     await expect(page.locator("footer.colophon")).toContainText("Made with Scorecard");
     await assertNoHorizontalOverflow(page);
   });

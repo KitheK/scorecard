@@ -105,9 +105,9 @@ export function ManualLayout({ children }: { children: ReactNode }) {
         <div id="manual-main">
           <PageEnter>{children}</PageEnter>
         </div>
-        <footer className="manual-colophon mono no-print">
-          {PLATFORM_ATTRIBUTION} · Paleologue display · Nouveau ornaments
-        </footer>
+        {pathname !== "/" ? (
+          <footer className="manual-colophon mono no-print">{PLATFORM_ATTRIBUTION}</footer>
+        ) : null}
       </div>
     </div>
   );

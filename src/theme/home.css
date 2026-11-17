@@ -27,11 +27,9 @@
 }
 
 .home-hero {
-  display: grid;
-  grid-template-columns: minmax(16rem, 26rem) minmax(0, 1.2fr);
-  gap: 2rem 2.5rem;
-  align-items: start;
+  display: block;
   margin-top: 3.5rem;
+  max-width: 38rem;
 }
 
 .home-copy .kicker {
@@ -46,10 +44,28 @@
   line-height: 1.75;
 }
 
-.home-hero .architecture-plate {
-  margin: 0;
+.home-plate {
+  margin-top: 3rem;
+  width: min(54rem, 100%);
+}
+
+.home-plate .architecture-plate,
+.home-plate .architecture-plate__frame-host,
+.home-plate .architecture-plate__nouveau {
+  width: 100%;
   max-width: 100%;
-  min-width: 0;
+}
+
+.home-plate .interactive-plate {
+  grid-template-columns: minmax(0, 1fr) minmax(11.5rem, 30%);
+}
+
+.home-plate .architecture-plate__label,
+.home-plate .arch-diagram-chrome__legend,
+.home-plate .detail-hint,
+.home-plate .detail-label,
+.home-plate .detail-ports {
+  font-size: 12px;
 }
 
 .scroll-stage {
@@ -62,9 +78,9 @@
   will-change: transform, opacity;
 }
 
-.scroll-stage .home-hero .architecture-plate {
-  transform: translate3d(calc(var(--scroll-progress) * -12px), calc(var(--scroll-progress) * 28px), 0)
-    scale(calc(1 - var(--scroll-progress) * 0.04));
+.scroll-stage .home-plate .architecture-plate {
+  transform: translate3d(calc(var(--scroll-progress) * -8px), calc(var(--scroll-progress) * 18px), 0)
+    scale(calc(1 - var(--scroll-progress) * 0.025));
   will-change: transform;
 }
 
@@ -72,8 +88,9 @@
 .scroll-stage .part-block,
 .scroll-stage .faq,
 .scroll-stage .colophon,
-.scroll-stage .desk-interactives,
-.scroll-stage .shot-strip {
+.scroll-stage .home-desk-ornaments,
+.scroll-stage .shot-strip,
+.scroll-stage .home-plate {
   transform: translate3d(0, calc(var(--scroll-progress) * -10px), 0);
   opacity: calc(0.88 + var(--scroll-progress) * 0.12);
   will-change: transform, opacity;
@@ -201,6 +218,19 @@
   margin-top: 1.6rem;
 }
 
+.live-frame--lite .live-frame__chrome {
+  border: 1px solid color-mix(in srgb, var(--rule) 85%, var(--ink));
+  background: var(--canvas);
+}
+
+.live-frame--lite .live-frame__titlebar {
+  padding: 0.35rem 0.55rem 0.45rem;
+}
+
+.live-frame--lite .live-frame__toolbar {
+  padding: 0.3rem 0.55rem;
+}
+
 .live-frame__chrome {
   display: flex;
   flex-direction: column;
@@ -306,6 +336,38 @@
 
 .live-frame__media {
   position: relative;
+}
+
+.home-desk-ornaments {
+  margin: 3.5rem 0 0;
+  max-width: min(44rem, 100%);
+}
+
+.home-desk-ornaments__rule {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.85rem 1.25rem;
+  margin-bottom: 0.65rem;
+  min-height: 5rem;
+}
+
+.home-desk-ornaments__medallion {
+  flex: 0 0 auto;
+}
+
+.home-desk-ornaments__rail {
+  flex: 0 0 auto;
+  min-height: 4.5rem;
+}
+
+.home-desk-ornaments__rail--short {
+  min-height: 3rem;
+  opacity: 0.85;
+}
+
+.home-desk-ornaments__frieze {
+  width: 100%;
+  height: 4.25rem;
 }
 
 .desk-interactives {
@@ -438,13 +500,14 @@
 
 @media (prefers-reduced-motion: reduce) {
   .scroll-stage .home-hero .home-copy,
-  .scroll-stage .home-hero .architecture-plate,
+  .scroll-stage .home-plate .architecture-plate,
   .scroll-stage .stats,
   .scroll-stage .part-block,
   .scroll-stage .faq,
   .scroll-stage .colophon,
-  .scroll-stage .desk-interactives,
-  .scroll-stage .shot-strip {
+  .scroll-stage .home-desk-ornaments,
+  .scroll-stage .shot-strip,
+  .scroll-stage .home-plate {
     transform: none !important;
     opacity: 1 !important;
   }

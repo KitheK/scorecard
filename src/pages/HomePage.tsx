@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArchitecturePlate } from "../components/ArchitecturePlate";
-import { GenericDesk } from "../components/desk/GenericDesk";
+import { HomeDeskOrnaments } from "../components/desk/HomeDeskOrnaments";
 import { PageEnter } from "../components/PageEnter";
 import { PixelWordmark } from "../components/PixelWordmark";
 import { ScrollStage } from "../components/ScrollStage";
@@ -49,12 +49,18 @@ export function HomePage() {
                 connections.
               </p>
               <p className="lede">
-                Below: ornament desk toys, sample clips, and a contents preview. For the full status table and run steps,
-                open the <Link to="/scorecard">scorecard summary</Link>.
+                Below: the architecture figure, sample clips, and a contents preview. For the full status table and run
+                steps, open the <Link to="/scorecard">scorecard summary</Link>.
               </p>
             </div>
-            <ArchitecturePlate compact showTopology={false} />
           </header>
+
+          <section className="home-plate" aria-labelledby="home-plate-label">
+            <h2 id="home-plate-label" className="section-label">
+              {architecture.figureId ?? "ARCH_001"}
+            </h2>
+            <ArchitecturePlate showOverview showTopology={false} />
+          </section>
 
           <section className="shot-strip" aria-labelledby="shot-strip-label">
             <h2 id="shot-strip-label" className="section-label">
@@ -85,7 +91,7 @@ export function HomePage() {
             </div>
           </section>
 
-          <GenericDesk title="Scorecard · try the desk" />
+          <HomeDeskOrnaments />
 
           <section className="stats" aria-label="Manual statistics">
             <p className="mono">
@@ -160,9 +166,7 @@ export function HomePage() {
             </section>
           ) : null}
 
-          <footer className="colophon mono">
-            {PLATFORM_ATTRIBUTION} · {guideTitle} · Paléologue + Departure Mono
-          </footer>
+          <footer className="colophon mono">{PLATFORM_ATTRIBUTION}</footer>
         </main>
       </ScrollStage>
     </PageEnter>

@@ -9,6 +9,7 @@ import { FullHomeRouter } from "./pages/FullHomeRouter";
 import { ScorecardPage } from "./pages/ScorecardPage";
 import { WritePage } from "./write/WritePage";
 import { OrnamentSmokePage } from "./pages/OrnamentSmokePage";
+import { DevDeskPage } from "./pages/DevDeskPage";
 
 export function App() {
   return (
@@ -25,6 +26,7 @@ export function App() {
             <Route path="/export" element={<ExportPage />} />
             {import.meta.env.DEV ? <Route path="/write/*" element={<WritePage />} /> : null}
             {import.meta.env.DEV ? <Route path="/dev/ornaments" element={<OrnamentSmokePage />} /> : null}
+            {import.meta.env.DEV ? <Route path="/dev/desk" element={<DevDeskPage />} /> : null}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>

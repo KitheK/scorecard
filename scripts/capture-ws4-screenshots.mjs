@@ -4,13 +4,9 @@ import { mkdir } from "node:fs/promises";
 const OUT = "/opt/cursor/artifacts/ws4-screenshots";
 const shots = [
   { name: "home-desktop-light", url: "/", width: 1280, theme: "light" },
-  { name: "home-desktop-dark", url: "/", width: 1280, theme: "dark" },
   { name: "home-mobile-light", url: "/", width: 390, theme: "light" },
-  { name: "home-mobile-dark", url: "/", width: 390, theme: "dark" },
   { name: "chapter-desktop-light", url: "/chapters/03-blocks", width: 1280, theme: "light" },
-  { name: "chapter-desktop-dark", url: "/chapters/03-blocks", width: 1280, theme: "dark" },
   { name: "chapter-mobile-light", url: "/chapters/03-blocks", width: 390, theme: "light" },
-  { name: "chapter-mobile-dark", url: "/chapters/03-blocks", width: 390, theme: "dark" },
 ];
 
 const browser = await chromium.launch();
