@@ -4,7 +4,8 @@ import StarterKit from "@tiptap/starter-kit";
 import { useMemo, useState } from "react";
 import { useContent } from "../lib/ContentContext";
 import { authorConfirm, markAuthored } from "../lib/provenance";
-import { themePresets, type ThemeJson, type ThemeScheme } from "../lib/schemas";
+import { BUILTIN_FONT_PACKS, FONT_PACK_OPTIONS, withFontPack } from "../lib/fontPacks";
+import { themePresets, type BuiltinFontPackId, type ThemeJson, type ThemeScheme } from "../lib/schemas";
 
 async function saveFile(file: string, data: unknown) {
   const res = await fetch("/__scorecard/save", {
@@ -152,35 +153,62 @@ function LinkHome() {
 
 function LookPanel({ theme, onChange }: { theme: ThemeJson; onChange: (t: ThemeJson) => void }) {
   const schemes: ThemeScheme[] = ["libretto", "plate", "poster", "plain", "custom"];
+  const packId = (theme.fontPackId ?? "libretto-default") as BuiltinFontPackId;
   return (
     <div className="look-grid">
       <h2>Look</h2>
+      <p>Font pack</p>
+      {FONT_PACK_OPTIONS.map((opt) => (
+        <button
+          key={opt.id}
+          type="button"
+          aria-pressed={packId === opt.id}
+          onClick={() => onChange(withFontPack(themePresets(theme.scheme, theme.tone), opt.id))}
+        >
+          {BUILTIN_FONT_PACKS[opt.id].label}
+          <span className="look-pack-blurb">{opt.blurb}</span>
+          <img
+            src={
+              opt.id === "libretto-default"
+                ? "/previews/fonts/specimen-AZ.png"
+                : "/previews/fonts/pack-editorial-plain.png"
+            }
+            alt=""
+            width={160}
+            style={{ display: "block", marginTop: "0.25rem" }}
+          />
+        </button>
+      ))}
       <p>Scheme</p>
       {schemes.map((s) => (
         <button
           key={s}
           type="button"
           aria-pressed={theme.scheme === s}
-          onClick={() => onChange(themePresets(s, s === "plain" ? "plain" : theme.tone))}
+          onClick={() => onChange({ ...withFontPack(themePresets(s, s === "plain" ? "plain" : theme.tone), packId) })}
         >
           {s}
         </button>
       ))}
-      <p>Display face</p>
-      <button
-        type="button"
-        aria-pressed={theme.fonts.display === "paleologue-poster"}
-        onClick={() => onChange({ ...theme, fonts: { ...theme.fonts, display: "paleologue-poster" } })}
-      >
-        Paleologue Poster
-      </button>
-      <button
-        type="button"
-        aria-pressed={theme.fonts.display === "paleologue"}
-        onClick={() => onChange({ ...theme, fonts: { ...theme.fonts, display: "paleologue" } })}
-      >
-        Paleologue
-      </button>
+      {packId === "libretto-default" ? (
+        <>
+          <p>Paléologue variant</p>
+          <button
+            type="button"
+            aria-pressed={theme.fonts.display === "paleologue-poster"}
+            onClick={() => onChange({ ...theme, fonts: { ...theme.fonts, display: "paleologue-poster" } })}
+          >
+            Poster (COLR)
+          </button>
+          <button
+            type="button"
+            aria-pressed={theme.fonts.display === "paleologue"}
+            onClick={() => onChange({ ...theme, fonts: { ...theme.fonts, display: "paleologue" } })}
+          >
+            Outline
+          </button>
+        </>
+      ) : null}
       <p>Foot frieze</p>
       {(["lys33", "pavot30", "none"] as const).map((v) => (
         <button

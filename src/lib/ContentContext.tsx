@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { applyTheme } from "../theme/applyTheme";
 import { loadContent, type ContentBundle } from "./loadContent";
+import { loadFontPackForTheme } from "./loadFontPack";
 import type { ThemeJson } from "./schemas";
 
 type Ctx = ContentBundle & {
@@ -13,7 +14,13 @@ const ContentContext = createContext<Ctx | null>(null);
 export function ContentProvider({ children }: { children: ReactNode }) {
   const [bundle, setBundle] = useState(loadContent);
   useEffect(() => {
-    applyTheme(bundle.theme);
+    let cancelled = false;
+    void loadFontPackForTheme(bundle.theme).then((pack) => {
+      if (!cancelled) applyTheme(bundle.theme, pack);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [bundle.theme]);
 
   const value = useMemo<Ctx>(
