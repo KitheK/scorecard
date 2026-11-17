@@ -290,6 +290,8 @@ Six workstreams. **WS0 must merge first.** Each brief below is intended to be **
 
 **Build order:** WS0 → (WS1 ∥ WS2 ∥ WS3 ∥ WS5) → WS4 → sync skills/README.
 
+**Documentation (do not land on `master`):** Performance audits, timing studies, and other “how we built this workstream” notes stay on that workstream’s feature branch (for example `Agent/ws1-workstream-notes-*`), not in stacked PRs that eventually merge to `master`. Normative cross-stream contracts remain in `docs/contracts/`.
+
 ---
 
 ### WS0 — Contracts & schema types (gatekeeper)
