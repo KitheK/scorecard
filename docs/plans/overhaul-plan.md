@@ -122,7 +122,7 @@ Scorecard `ManualBlock` is a superset but renderer implements ~half.
 | Live embed chrome | Theme tabs, route label, RESET / FULL PAGE | Screenshots ch.02 |
 | `ScrollStage` | Home scroll-linked staging | `components/ScrollStage.tsx` |
 
-**Porting strategy for Scorecard:** Do not copy Conductor-specific desk toys wholesale. Port the **patterns**: framed plates, mono figure labels, motion with fallback, optional `live` block with honest “mock/embed” captioning, interactive architecture when data supports it.
+**Porting strategy for Scorecard:** Do not copy Conductor-specific desk toys. Port the **patterns**: framed plates, mono figure labels, motion with fallback, **framed screenshot/clip** “live” blocks (no real iframes in v1), **interactive** architecture plates, and **generic Nouveau ornament** desk pieces (not per-project UI assets).
 
 ### 2.4 Typography & colour
 
@@ -134,9 +134,9 @@ Scorecard `ManualBlock` is a superset but renderer implements ~half.
 
 ---
 
-## 3. Numbered issues (prioritised)
+## 3. Numbered issues (16 total, prioritised)
 
-Priority: **P0** = most visible / owner-critical; **P1** = important; **P2** = enables roadmap.
+Priority: **P0** = most visible / owner-critical; **P1** = important; **P2** = enables roadmap. Normative owner choices are in **§5**.
 
 ### P0 — Visual manual system (Libretto parity)
 
@@ -145,7 +145,7 @@ Priority: **P0** = most visible / owner-critical; **P1** = important; **P2** = e
 - **Outcome:** Libretto-style `ManualLayout` for Standard/Full; Lite keeps simple summary.  
 - **Acceptance:** Roman-part sidebar; active chapter highlight; scroll ruler on chapter routes; responsive contents drawer.  
 - **Files:** New `src/components/ManualLayout.tsx` (port/adapt), `Layout.tsx`, `theme.css` / split `manual.css`, `App.tsx`.  
-- **Deps:** Issue 10 (naming for wordmark text).
+- **Deps:** Issue 8 (project name for `PixelWordmark` in sidebar).
 
 **Issue 2 — Contents & chapter typography**  
 - **Problem:** Contents and chapters lack editorial hierarchy (standfirst, rule, word counts, contents rows).  
@@ -155,11 +155,11 @@ Priority: **P0** = most visible / owner-critical; **P1** = important; **P2** = e
 - **Deps:** Issue 1.
 
 **Issue 3 — Rich block renderer**  
-- **Problem:** `ManualBlock` types unused; paragraphs lack links; no figures.  
-- **Outcome:** Render `figure`, `live`, `decision`, `requirement`, `contribution`; RichText for `p`.  
-- **Acceptance:** Dogfood manual uses at least one `figure` block; links render; unknown types fail check with clear error.  
-- **Files:** `ChapterPage.tsx`, new `RichText.tsx`, `schemas.ts`, skill `references/schema.md`.  
-- **Deps:** Issues 4–5 for figure content.
+- **Problem:** `ManualBlock` types unused; paragraphs lack links; no figures or media frames.  
+- **Outcome:** Render `figure`, `live` (§4.6 screenshot/clip), `shot`, `motion`, `desk`, `decision`, `requirement`, `contribution`; RichText for `p`.  
+- **Acceptance:** Dogfood manual uses `figure` + one media block; links render; unknown types fail `check`; no iframe elements in DOM.  
+- **Files:** `ChapterPage.tsx`, `RichText.tsx`, `schemas.ts`, skill `references/schema.md`.  
+- **Deps:** Issues 4–5, 15–16.
 
 **Issue 4 — Wire Nouveau SVG ornaments into plates**  
 - **Problem:** `NouveauFrame` / `NouveauFrieze` exist but UI uses PNG footers and CSS border on architecture.  
@@ -168,19 +168,19 @@ Priority: **P0** = most visible / owner-critical; **P1** = important; **P2** = e
 - **Files:** `ArchitecturePlate.tsx`, `FootFrieze.tsx`, import nouveau in pages.  
 - **Deps:** None.
 
-**Issue 5 — Architecture diagram plates (not Mermaid pre)**  
-- **Problem:** No real diagrams; owner called this pivotal.  
-- **Outcome:** Generate `architecture.json` + optional `architecture-plate.json` (layout hints); render SVG plate in Libretto style with project-specific nodes.  
-- **Acceptance:** Every Standard/Full generated site has ≥3 nodes, ≥2 edges, visible framed diagram on summary + architecture chapter; paths validated.  
-- **Files:** `src/generators/architecture.ts`, new `src/components/plates/ArchitectureDiagram.tsx`, `figures/kit.tsx` (shared primitives, trimmed from Libretto), skill `analysis.md`, `architecture.json` schema extension.  
-- **Deps:** Contract in §4.3.
+**Issue 5 — Interactive architecture diagram plates (v1)**  
+- **Problem:** No real diagrams; Mermaid `<pre>` only; no Libretto FIG-style interaction.  
+- **Outcome:** Generate `architecture.json` from repo scan; render **framed SVG plate** inside `NouveauFrame` with **clickable/animated nodes** (select toggles detail rail or panel; subtle motion on active node; `prefers-reduced-motion` static). Mermaid remains print/export fallback only.  
+- **Acceptance:** Every Standard/Full generated site has ≥3 nodes, ≥2 edges; clicking a node shows label, path evidence, and edge summary; home/summary + architecture chapter both show plate; paths validated.  
+- **Files:** `src/generators/architecture.ts`, `src/components/plates/` (`ArchitectureDiagram.tsx`, port patterns from Libretto `InteractivePlate`, `DetailRail`, `TopologyPanel`), `figures/kit.tsx`, skill `analysis.md`, `architecture.json` schema (§4.3).  
+- **Deps:** Contract §4.3; Issue 4 (frame).
 
 **Issue 6 — Web interview form + agent handoff**  
 - **Problem:** No local engagement surface; answers not structured.  
-- **Outcome:** `/interview` multi-step form (Stages A–E); saves `interview.json`; exports `interview-handoff.json` for agent; CLI opens interview first on fresh scaffold.  
-- **Acceptance:** User can complete form without chat; agent reads handoff file and continues scan/generate; refresh preserves authored answers.  
-- **Files:** New `src/interview/*`, `vite-plugin-scorecard-save.ts`, `bin/scorecard.js` (`interview` command, `dev` opens interview if empty), `schemas.ts`.  
-- **Deps:** Contract §4.1.
+- **Outcome:** `/interview` multi-step form (Stages A–E) on **127.0.0.1 only**; persists `content/interview.json` via existing save plugin; optional `interview-handoff.json` snapshot for agents; CLI opens interview when `answers` empty. **No auth tokens** — trust model: local dev server, user-owned machine; agent **decides relevance** of answers when generating (infer-first still applies).  
+- **Acceptance:** User completes form without chat; reloading page shows saved answers; agent skill documents handoff read order; `check` validates schema.  
+- **Files:** New `src/interview/*`, `vite-plugin-scorecard-save.ts`, `bin/scorecard.js` (`interview` command; `dev` routes to interview if incomplete), `schemas.ts`, skills.  
+- **Deps:** Contract §4.1; Decision §5.7.
 
 ### P1 — Onboarding, naming, content quality
 
@@ -191,19 +191,19 @@ Priority: **P0** = most visible / owner-critical; **P1** = important; **P2** = e
 - **Files:** `skills/scorecard/interview.md`, mirrored `.github`/`.claude` skills, form UI copy.  
 - **Deps:** Issue 6.
 
-**Issue 8 — Product naming: “&lt;Project Name&gt; Guide”**  
-- **Problem:** SCORECARD branding on generated sites.  
-- **Outcome:** `manual.projectName` + `manual.title` = `"${projectName} Guide"`; display wordmark uses project name; “Scorecard” only in platform/footer credit.  
-- **Acceptance:** Fresh generate from `my-app` shows “My App Guide”; grep generated content for user-visible “Scorecard” only in platform attribution lines.  
-- **Files:** `schemas.ts`, `Layout.tsx`, `ScorecardPage.tsx`, `index.html` (dynamic title via React), skill SKILL.md scaffold instructions, all `content/*.json` templates.  
+**Issue 8 — Product naming + dual wordmark**  
+- **Problem:** SCORECARD branding on generated sites; no Libretto-style pixel title.  
+- **Outcome:** `manual.projectName` + `manual.title` = `"${projectName} Guide"`; hero shows **PixelWordmark** (project name, truncated sensibly) **and** Paléologue display for kicker/headings; “Scorecard” only in platform/footer credit.  
+- **Acceptance:** Fresh generate from `my-app` shows pixel + serif pairing on home/sidebar; grep user-visible “Scorecard” only in platform attribution.  
+- **Files:** `schemas.ts`, `Layout.tsx`, new `PixelWordmark.tsx` (port), `HomePage.tsx`, skill SKILL.md, content templates.  
 - **Deps:** Contract §4.2 (early).
 
-**Issue 9 — Home / opening essay (Full)**  
+**Issue 9 — Full Libretto-style home essay (generated Full only)**  
 - **Problem:** No Libretto-style orientation home.  
-- **Outcome:** For `size: full`, `/` is manual home (essay + hero figure + stats); summary moves to `/scorecard` or section on home.  
-- **Acceptance:** Full dogfood demonstrates home + plate; Lite unchanged.  
-- **Files:** New `HomePage.tsx`, `App.tsx`, `manual.json` shape, skill module gates.  
-- **Deps:** Issues 1, 5, 8.
+- **Outcome:** **Owner decision:** every **`size: full`** generated guide gets the **complete** Libretto-style `/` home: essay lede, hero architecture plate, stats band, contents preview, generic desk section (Issue 16), optional shot/motion strip. Summary moves to `/scorecard` (or anchored section). Standard/Lite unchanged.  
+- **Acceptance:** Full dogfood matches screenshot bar (`01-home-live-light` structure); Lite still one page.  
+- **Files:** `HomePage.tsx`, `App.tsx`, `manual.json`, skill `project-profiles.md` gates.  
+- **Deps:** Issues 1, 5, 8, 16.
 
 **Issue 10 — Agent pipeline: mandatory architecture + manual blocks**  
 - **Problem:** Skill doesn't require diagram or rich manual.  
@@ -235,95 +235,160 @@ Priority: **P0** = most visible / owner-critical; **P1** = important; **P2** = e
 - **Files:** `public/fonts/`, `look-gallery.html`, presets doc.  
 - **Deps:** Issue 12.
 
-**Issue 14 — Custom / generated font pack path**  
-- **Problem:** No workflow to add or generate fonts.  
-- **Outcome:** Documented steps: drop WOFF2 + OFL license → manifest entry; optional agent step to propose Google/specimen pairing (no auto hosting of copyrighted outlines).  
-- **Acceptance:** README section; `font-pack.json` `source: authored|generated`.  
-- **Files:** docs, skill Stage E, Issue 12 manifest.  
-- **Deps:** Issue 12.
+**Issue 14 — Font trace pipeline (reference image → letterforms)**  
+- **Problem:** Only hand-maintained Paléologue; no way to create new display faces from a reference sheet.  
+- **Outcome:** **Owner decision:** real pipeline modeled on Paléologue creation: ingest reference image → guided trace/spec steps (agent + optional local script) → export WOFF2 + OFL sidecar → register in font-pack manifest. Includes docs, `scripts/font-trace/` (or kit CLI subcommand), validation in `check`.  
+- **Acceptance:** Doc walks through one exemplar (Paléologue); adding a second display face from a user-supplied **PD or owned** reference produces loadable pack without editing `applyTheme` by hand.  
+- **Files:** `scripts/font-trace/*`, `docs/fonts/trace-pipeline.md`, skill Stage E, `schemas.ts`, `bin/scorecard.js` (`fonts trace` or similar), `LICENSES/FONTS.txt` pattern.  
+- **Deps:** Issue 12; Contract §4.5.
 
-**Issue 15 — Live embed block (honest)**  
-- **Problem:** `live` block type unused; feature marked stubbed.  
-- **Outcome:** Frame for iframe or static screenshot strip with Libretto chrome; caption requires provenance.  
-- **Acceptance:** Team dogfood can show deploy URL or “screenshot only” embed.  
-- **Files:** `ChapterPage.tsx`, new `LiveEmbed.tsx`, skill guidance.  
-- **Deps:** Issues 1, 3.
+**Issue 15 — Framed screenshot / clip blocks (no iframe v1)**  
+- **Problem:** `live` block type unused; owner does not want real iframes in v1.  
+- **Outcome:** **`live` / `shot` / `motion` blocks** render Libretto-style chrome around **static screenshots** and **video/GIF clips** (with poster + reduced-motion fallback). Optional link-out button to real deploy URL in caption — not an embedded app.  
+- **Acceptance:** Chapter can show framed PNG sequence or `MotionClip`; no `<iframe>` in v1; caption states provenance (screenshot vs recording).  
+- **Files:** `ChapterPage.tsx`, `ShotFigure.tsx`, `MotionClip.tsx`, `LiveFrame.tsx` (chrome only), skill guidance.  
+- **Deps:** Issues 1, 3, 11.
+
+**Issue 16 — Generic Nouveau desk section (not project UI)**  
+- **Problem:** Libretto desk toys are Conductor-specific; Scorecard must not require project frontend assets.  
+- **Outcome:** Home “try the desk” section uses **generic Nouveau interactives**: e.g. theme token toggle on sample plate, frieze/rail animation demo, frame variant picker — all from existing `src/components/nouveau/*`.  
+- **Acceptance:** Full home desk section works with zero project screenshots; uses ornaments only.  
+- **Files:** `src/components/desk/GenericDesk.tsx`, `HomePage.tsx`, `manual.json` block type `desk` → `kind: "nouveau"`.  
+- **Deps:** Issues 1, 4, 9.
 
 ---
 
 ## 4. Workstreams (parallel cloud agents)
 
-Five workstreams with minimal merge overlap if contracts land first.
+Six workstreams. **WS0 must merge first.** Each brief below is intended to be **copied wholesale** to a build agent (scope, contracts, acceptance, no-go files).
 
 ```
-                    ┌─────────────────────────────────────┐
-                    │ WS0: Contracts (½ day, one agent)    │
-                    │ naming, interview, arch plate, fonts │
-                    └─────────────────┬───────────────────┘
-          ┌───────────────────────────┼───────────────────────────┐
-          ▼                           ▼                           ▼
-   ┌──────────────┐           ┌──────────────┐            ┌──────────────┐
-   │ WS1: Manual  │           │ WS2: Interview│            │ WS3: Arch    │
-   │ shell + CSS  │           │ web form+CLI  │            │ generator +  │
-   │              │           │               │            │ SVG plates   │
-   └──────┬───────┘           └──────┬───────┘            └──────┬───────┘
-          │                          │                          │
-          └────────────┬─────────────┴──────────────┬───────────┘
-                       ▼                              ▼
-                ┌──────────────┐               ┌──────────────┐
-                │ WS4: Blocks  │               │ WS5: Fonts   │
-                │ + home page  │               │ + packs      │
-                └──────────────┘               └──────────────┘
+                         ┌──────────────────────────────┐
+                         │ WS0: Contracts + schema types │
+                         └──────────────┬───────────────┘
+        ┌──────────────────────────────┼──────────────────────────────┐
+        ▼                              ▼                              ▼
+ ┌─────────────┐                ┌─────────────┐                ┌─────────────┐
+ │ WS1: Shell  │                │ WS2: Interview│              │ WS3: Arch    │
+ │ + ornaments │                │ form + CLI    │              │ interactive  │
+ └──────┬──────┘                └──────────────┘                └──────┬──────┘
+        │                                                              │
+        └──────────────────────────┬───────────────────────────────────┘
+                                   ▼
+                          ┌─────────────────┐
+                          │ WS4: Blocks +   │
+                          │ Full home       │
+                          └────────┬────────┘
+                                   │
+                          ┌────────┴────────┐
+                          ▼                 ▼
+                   ┌─────────────┐   ┌─────────────┐
+                   │ WS5: Fonts  │   │ (WS4 owns   │
+                   │ packs+trace │   │  naming)    │
+                   └─────────────┘   └─────────────┘
 ```
 
-### WS0 — Contracts (must merge first)
+**Build order:** WS0 → (WS1 ∥ WS2 ∥ WS3 ∥ WS5) → WS4 → sync skills/README.
 
-Single PR touching only `docs/contracts/*.md` + `schemas.ts` **type additions** (no UI).
+---
 
-| Contract | Purpose |
-|----------|---------|
-| **§4.1 Interview handoff** | `interview.json` + `interview-handoff.json` |
-| **§4.2 Project naming** | `manual.projectName`, title rule, `document.title` |
-| **§4.3 Architecture plate** | Extended `architecture.json` + optional plate layout |
-| **§4.4 Font pack manifest** | `FontPackManifest` shape |
+### WS0 — Contracts & schema types (gatekeeper)
 
-### WS1 — Manual shell & global styles
+| Field | Value |
+|-------|--------|
+| **Mission** | Land shared JSON/TypeScript contracts so parallel agents do not diverge. |
+| **Issues** | Underpins all; implements §4.1–§4.6 types in `schemas.ts` + `docs/contracts/*.md`. |
+| **In scope** | `docs/contracts/`, `src/lib/schemas.ts` (types + validators only), `skills/scorecard/references/schema.md`. |
+| **Out of scope** | React pages, generators, CLI behaviour, CSS. |
+| **Depends on** | None. |
+| **Blocks** | WS1–WS5. |
+| **Acceptance** | `npm test` + `npx scorecard-kit check` still pass; new types documented; no UI imports broken. |
 
-- **Issues:** 1, 2, 4 (in part)  
-- **Touches:** `Layout.tsx`, new `ManualLayout`, `theme.css` / `manual.css`, `FootFrieze`  
-- **Avoid:** `ChapterPage` block switch (WS4), generators (WS3)
+**Deliverable:** One small PR; owners review contracts before parallel work starts.
 
-### WS2 — Interview web form & CLI
+---
 
-- **Issues:** 6, 7  
-- **Touches:** `src/interview/`, `bin/scorecard.js`, `vite-plugin-scorecard-save.ts`, skills copy  
-- **Avoid:** `ManualLayout` (WS1)
+### WS1 — Manual shell, typography, Nouveau chrome
 
-### WS3 — Architecture generator & diagram UI
+| Field | Value |
+|-------|--------|
+| **Mission** | Libretto navigation shell: sidebar TOC, ruler, contents/chapter chrome, SVG ornaments, `PixelWordmark` in sidebar (project name from §4.2). |
+| **Owner decisions** | Dual wordmark (§5.4); generic ornaments visible in chrome (§5.6). |
+| **Issues** | 1, 2, 4, 8 (layout/wordmark only). |
+| **Contracts** | §4.2 `manual.projectName`; read-only `theme.json` / font pack id (do not implement pack switching). |
+| **In scope** | `ManualLayout.tsx`, `Layout.tsx`, `ContentsPage.tsx`, chapter header styles in `ChapterPage.tsx` (chrome only, not block switch), `FootFrieze.tsx`, `theme.css` / `manual.css`, `PixelWordmark.tsx`, `App.tsx` route wrapper. |
+| **Out of scope** | `HomePage` body, architecture plate, interview routes, block types beyond existing, font trace scripts. |
+| **Depends on** | WS0 merged. |
+| **Parallel with** | WS2, WS3, WS5. |
+| **Acceptance** | Standard manual shows sidebar + ruler on `/chapters/*`; contents rows styled; `NouveauFrieze`/`NouveauFrame` used in footer/plate wrapper smoke route; sidebar wordmark uses `projectName`. |
 
-- **Issues:** 5, 10  
-- **Touches:** `src/generators/`, `src/components/plates/`, skills  
-- **Avoid:** large CSS refactors (WS1)
+---
 
-### WS4 — Block renderer, RichText, home (Full)
+### WS2 — Interview web form, CLI entry, skill copy
 
-- **Issues:** 3, 9, 11, 15  
-- **Touches:** `ChapterPage.tsx`, `HomePage.tsx`, `schemas.ts` blocks, dogfood JSON  
-- **Merge after:** WS1 shell + WS3 plate component API
+| Field | Value |
+|-------|--------|
+| **Mission** | Engaging local interview form; first-run CLI path; agent handoff file. |
+| **Owner decisions** | Local trust model (§5.7). |
+| **Issues** | 6, 7, 8 (`projectName` field on form only). |
+| **Contracts** | §4.1 interview + handoff JSON. |
+| **In scope** | `src/interview/*`, `vite-plugin-scorecard-save.ts` (allowlist `interview.json`, optional handoff), `bin/scorecard.js` (`interview`, `dev` redirect logic), mirrored `skills/*/interview.md` + form string tables, `content/interview.json` example. |
+| **Out of scope** | Manual layout, architecture, home page, font pipeline. |
+| **Depends on** | WS0. |
+| **Parallel with** | WS1, WS3, WS5. |
+| **Acceptance** | `npx scorecard-kit dev` with empty answers opens `/interview` on 127.0.0.1; submit persists JSON; reload shows data; handoff file generated on “Done”; skill tells agent to read handoff then infer/scan. |
 
-### WS5 — Font packs
+---
 
-- **Issues:** 12, 13, 14  
-- **Touches:** `applyTheme.ts`, `theme.json`, `WritePage` Look panel, `public/fonts/`  
-- **Mostly independent** once §4.4 exists
+### WS3 — Architecture scan, interactive SVG plates, agent gates
 
-### Build order
+| Field | Value |
+|-------|--------|
+| **Mission** | Mandatory project architecture diagrams with **v1 interactivity** (click nodes, detail rail, reduced motion). |
+| **Owner decisions** | Interactive required in v1 (§5.2). |
+| **Issues** | 5, 10, 4 (plate frame integration in `ArchitecturePlate` only). |
+| **Contracts** | §4.3 extended `architecture.json` with `details` per node. |
+| **In scope** | `src/generators/architecture.ts`, layout helper, `src/components/plates/*`, refactor `ArchitecturePlate.tsx`, tests, `skills/scorecard/SKILL.md` + `analysis.md`, dogfood architecture JSON with real nodes. |
+| **Out of scope** | `HomePage`, interview, global CSS shell, font trace. |
+| **Depends on** | WS0; soft dependency on WS1 for shell CSS class names (use BEM/stable classes agreed in contract doc). |
+| **Parallel with** | WS1, WS2, WS5. |
+| **Acceptance** | `buildArchitecture` + layout produces coordinates; plate renders ≥3 nodes; click updates detail panel; mermaid hidden in UI but present in JSON; skill mandates generator step. |
 
-1. **WS0** contracts → merge to `master`  
-2. **WS1 + WS2 + WS3** in parallel  
-3. **WS4** integrates 1 + 3  
-4. **WS5** parallel with 4 if capacity allows  
-5. **Issue 8** naming can start in WS0/WS1 early (low conflict)
+**Public component API (for WS4):** export `ArchitecturePlate` / `InteractiveArchitectureDiagram` accepting `ArchitectureFile` from context.
+
+---
+
+### WS4 — Block renderer, Full home essay, media frames, generic desk
+
+| Field | Value |
+|-------|--------|
+| **Mission** | Rich manual content, **Full-only** Libretto home, framed screenshots/clips, generic Nouveau desk. |
+| **Owner decisions** | Full home essay (§5.1); no iframe embeds (§5.3); generic desk (§5.6). |
+| **Issues** | 3, 9, 11, 15, 16; naming copy polish for 8. |
+| **Contracts** | §4.2, §4.6 media blocks; consume WS3 plate API + WS1 layout. |
+| **In scope** | `ChapterPage.tsx` block switch, `RichText.tsx`, `HomePage.tsx`, `GenericDesk.tsx`, `MotionClip.tsx`, `ShotFigure.tsx`, `LiveFrame.tsx`, `manual.json` + full dogfood, `ScorecardPage` route move (`/scorecard`), `schemas.ts` block unions if not done in WS0. |
+| **Out of scope** | Generator algorithms, interview form, font trace scripts. |
+| **Depends on** | WS0, WS1 (shell), WS3 (architecture component). WS2 optional for `projectName` population. |
+| **Parallel with** | WS5 (avoid `applyTheme` unless coordinating). |
+| **Acceptance** | Full dogfood `/` matches Libretto home structure; `live` uses screenshot/clip only; desk section uses Nouveau demos; all `ManualBlock` types in schema render or `check` errors; Lite unchanged. |
+
+---
+
+### WS5 — Font packs + trace pipeline
+
+| Field | Value |
+|-------|--------|
+| **Mission** | Swapable font packs **and** reference-image → letterform pipeline (Paléologue-class). |
+| **Owner decisions** | Real trace pipeline (§5.5). |
+| **Issues** | 12, 13, 14. |
+| **Contracts** | §4.4 manifest, §4.5 trace artifact layout. |
+| **In scope** | `applyTheme.ts`, `theme.json`, `WritePage` Look panel, `look-gallery.html`, `public/fonts/`, `scripts/font-trace/`, CLI subcommand, `docs/fonts/trace-pipeline.md`, `check` validation, one alternate built-in pack. |
+| **Out of scope** | Manual layout, interview, architecture UI. |
+| **Depends on** | WS0. |
+| **Parallel with** | WS1–WS3. |
+| **Acceptance** | Switch pack in Look updates faces; trace doc runs end-to-end on sample reference; new pack registers via manifest without code changes to enums. |
+
+---
 
 ### Shared interfaces (detail)
 
@@ -355,9 +420,9 @@ Single PR touching only `docs/contracts/*.md` + `schemas.ts` **type additions** 
 }
 ```
 
-- Form writes `content/interview.json`.  
-- `POST /__scorecard/save` already pattern for Write; extend allowlist.  
-- `interview-handoff.json` = slim export for agent (no PII beyond user entry).
+- Form writes `content/interview.json` on the user’s machine via `POST /__scorecard/save` (Vite dev plugin, **127.0.0.1** bind only — same as existing `HOST` in `bin/scorecard.js`).  
+- **Trust model (planning decision):** no login/session token. Anyone who can reach the loopback port can POST; acceptable because the kit is local authoring tooling, not a shared host. Agents must treat answers as **hints** — still infer-first, redact secrets, never auto-`confirmed` except fields the user explicitly submitted in the form (tag `confirmed` only for those keys).  
+- `interview-handoff.json` = slim export for agent (profile + non-empty answers + narrative; omit empty skips).
 
 #### 4.2 Naming contract
 
@@ -366,7 +431,7 @@ Single PR touching only `docs/contracts/*.md` + `schemas.ts` **type additions** 
 - `scorecard.json` may add `projectName` duplicate for summary hero.  
 - Platform string: footer e.g. `Made with Scorecard` (mono, muted).
 
-#### 4.3 Architecture plate data
+#### 4.3 Architecture plate data (interactive v1)
 
 Extend `architecture.json`:
 
@@ -375,15 +440,29 @@ Extend `architecture.json`:
   "schemaVersion": 1,
   "figureId": "ARCH_001",
   "layout": "spine-lr | layered | radial",
-  "nodes": [{ "id", "label", "group", "path?", "x?", "y?" }],
-  "edges": [{ "from", "to", "label?" }],
-  "groups": [{ "id", "title", "tone" }],
-  "mermaid": "optional fallback for export/print"
+  "nodes": [
+    {
+      "id": "api",
+      "label": "API",
+      "group": "runtime",
+      "path": "src/server.ts",
+      "tone": "service",
+      "detail": {
+        "role": "HTTP entry",
+        "evidence": "package.json scripts",
+        "ports": ["3000"]
+      }
+    }
+  ],
+  "edges": [{ "from": "api", "to": "db", "label": "queries" }],
+  "groups": [{ "id": "runtime", "title": "Runtime", "tone": "service" }],
+  "mermaid": "fallback for export/print only — not primary UI"
 }
 ```
 
-- Generator fills nodes from repo scan; layout engine assigns coordinates if omitted.  
-- Renderer: SVG + `NouveauFrame`; interactive selection optional v1.1.
+- Generator fills nodes from repo scan; layout engine assigns `x`/`y` if omitted.  
+- Renderer: SVG inside `NouveauFrame`; **required v1:** click/double-tap selects node; `DetailRail` or side panel shows `detail`; active node may use subtle CSS/SVG motion; honour `prefers-reduced-motion`.  
+- Export PDF may use `mermaid` snapshot.
 
 #### 4.4 Font pack manifest
 
@@ -404,17 +483,58 @@ Extend `architecture.json`:
 
 - `theme.json` references `fontPackId` instead of inline enums (enums kept as shortcuts mapping to packs).
 
+#### 4.5 Font trace pipeline artifacts
+
+```
+font-packs/
+  <packId>/
+    manifest.json       # §4.4
+    reference.png       # user-supplied sheet (gitignored in user projects if desired)
+    source/             # intermediate (SVG glyphs or .glyphs.json)
+    *.woff2
+    LICENSE
+```
+
+- CLI: `npx scorecard-kit fonts trace --reference ./sheet.png --packId my-display --label "My Display"`  
+- Pipeline stages (documented, at least stages 1–3 automated or semi-automated): ingest → trace/normalize → build WOFF2 → validate with `check`.  
+- Agent skill Stage E may invoke trace for **user-owned or PD** references only; refuse unknown licensing.
+
+#### 4.6 Media / live block data (no iframe v1)
+
+```json
+{
+  "type": "live",
+  "mode": "screenshot | clip",
+  "src": "/media/demo-dashboard.png",
+  "poster": "/media/demo-dashboard.png",
+  "webm": "/media/demo.webm",
+  "gif": "/media/demo.gif",
+  "chrome": { "routeLabel": "app/dashboard", "tabs": ["A", "B"] },
+  "linkOut": "https://deploy.example.com",
+  "caption": "Screenshot of the real UI; not live in page.",
+  "provenance": "inferred",
+  "source": "generated"
+}
+```
+
+- Renderer draws Libretto-style frame (from screenshot §5.3); **no `<iframe>`** in v1.  
+- `linkOut` optional; opens in new tab from chrome button.
+
 ---
 
-## 5. Open questions (owner)
+## 5. Owner decisions (resolved)
 
-1. **Full vs Standard home:** Should Standard gain a shortened home essay, or only Full gets Libretto-style `/`?
-2. **Live embed scope:** Require iframe of deploy URL when present, or screenshot/motion-only for v1?
-3. **Interactive architecture:** Is click-to-inspect detail rail required for v1, or static framed SVG enough?
-4. **Interview form auth:** Local-only trust model OK (anyone with localhost can save), or need session token?
-5. **Custom fonts:** Is “generate new font pack” limited to **selecting** open-licensed pairs, or actual outline generation (major scope)?
-6. **Pixel wordmark:** Port Libretto `PixelWordmark` for all guides, or Paléologue display only?
-7. **Conductor desk toys:** Generic “try a panel” placeholders per project, or skip desk block until project supplies assets?
+| # | Topic | Decision |
+|---|--------|----------|
+| 5.1 | Home page | **`size: full`** generated guides get the **full** Libretto-style home essay at `/` (hero, plate, stats, desk, contents preview). Standard/Lite not expanded in v1. |
+| 5.2 | Architecture | **Interactive in v1** — clickable/animated nodes inside framed SVG plates with detail rail; not static-only. |
+| 5.3 | Live embeds | **Framed screenshots and clips only** in v1 — no embedded iframes; honest captions + optional link-out. |
+| 5.4 | Title lettering | **Pixel wordmark + Paléologue** together (sidebar and/or home hero). |
+| 5.5 | Custom fonts | **Font packs plus trace pipeline** from reference image (Paléologue-style), not merely picking Google Fonts. |
+| 5.6 | Desk section | **Generic Nouveau ornament interactives**, not project-specific Conductor toys. |
+| 5.7 | Interview trust | **Planning decision:** loopback-only form → `content/interview.json` → agent reads handoff and **decides relevance**; no session auth (see §4.1). |
+
+*Former open questions are closed; implementation agents should treat this table as normative.*
 
 ---
 
@@ -425,8 +545,10 @@ Extend `architecture.json`:
 | Content validity | `npx scorecard-kit check` |
 | Unit tests | `npm test` (extend plate + interview schema tests) |
 | Visual | Compare side-by-side with Libretto screenshots; Playwright snapshots optional |
-| Agent E2E | RED fixture: interview handoff → generate → architecture nodes ≥ 3 |
-| Naming | Assert no `SCORECARD` hero in generated fixture |
+| Agent E2E | RED fixture: interview handoff → generate → architecture nodes ≥ 3 + interactive plate |
+| Naming | Assert no `SCORECARD` hero; pixel wordmark shows `projectName` |
+| Full home | Full dogfood `/` includes essay + ARCH plate + generic desk |
+| Fonts | Trace pipeline doc smoke test on PD sample |
 
 ---
 
