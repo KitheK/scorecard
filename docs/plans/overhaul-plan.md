@@ -169,7 +169,7 @@ Priority: **P0** = most visible / owner-critical; **P1** = important; **P2** = e
 - **Deps:** None.
 
 **Issue 5 — Architecture diagram plates (not Mermaid pre)**  
-- **Problem:** No real diagrams; owner反馈 pivotal.  
+- **Problem:** No real diagrams; owner called this pivotal.  
 - **Outcome:** Generate `architecture.json` + optional `architecture-plate.json` (layout hints); render SVG plate in Libretto style with project-specific nodes.  
 - **Acceptance:** Every Standard/Full generated site has ≥3 nodes, ≥2 edges, visible framed diagram on summary + architecture chapter; paths validated.  
 - **Files:** `src/generators/architecture.ts`, new `src/components/plates/ArchitectureDiagram.tsx`, `figures/kit.tsx` (shared primitives, trimmed from Libretto), skill `analysis.md`, `architecture.json` schema extension.  
