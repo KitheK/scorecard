@@ -3,10 +3,15 @@ import { ArchitecturePlate } from "../components/ArchitecturePlate";
 import { useContent } from "../lib/ContentContext";
 
 export function ScorecardPage() {
+<<<<<<< HEAD
   const { scorecard, run, decisions, stack, manual } = useContent();
   const showArch = scorecard.size !== "lite" && stack.parts.length >= 3;
   const projectName = manual.projectName?.trim() || scorecard.projectName?.trim() || "Project";
   const pageClass = scorecard.size === "lite" ? "page" : "manual-summary page";
+=======
+  const { scorecard, run, decisions, architecture } = useContent();
+  const showArch = scorecard.size !== "lite" && architecture.nodes.length >= 3;
+>>>>>>> origin/Agent/ws3-architecture-plates-11ad
 
   return (
     <main className={pageClass}>
@@ -87,8 +92,8 @@ export function ScorecardPage() {
       ) : null}
 
       {showArch ? (
-        <section className="panel" aria-labelledby="arch">
-          <h2 id="arch">How it fits together</h2>
+        <section className="panel" id="arch" aria-labelledby="arch-heading">
+          <h2 id="arch-heading">How it fits together</h2>
           <ArchitecturePlate />
         </section>
       ) : null}
