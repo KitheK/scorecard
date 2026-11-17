@@ -4,9 +4,9 @@ Everything here is generated from the traced motifs in `src/components/nouveau/m
 
 | File | What it is | Source |
 |---|---|---|
-| `../../logo.svg` | Plugin logo (static, 512×512 viewBox), used by `.cursor-plugin/plugin.json` | plate 30: `p30-blossom` medallion over `p30-cap` seed pods |
+| `../../logo.png` | Plugin logo (512×512 PNG), used by `.cursor-plugin/plugin.json` and root `plugin.json` | plate 30: `p30-blossom` medallion over `p30-cap` seed pods |
+| `../../logo.svg` | Vector source for README and docs (512×512 viewBox) | as above |
 | `logo-512.png` · `logo-256.png` · `logo-128.png` | PNG exports of the logo, transparent corners | as above |
-| `logo-legacy.svg` | The previous scorecard-sheet logo | n/a |
 | `hero.svg` | Animated README hero: the logo plus the wordmark, with glyph outlines taken from Libretto Paléologue Poster | plate 30 + font |
 | `divider-lys33.svg` · `divider-lys33-foot.svg` | Animated lily-frieze page dividers, 880 px wide (the foot one is flipped) | plate 33: `p33-frieze` |
 | `frame-coins46-top.svg` · `frame-coins46-bottom.svg` | Animated frame caps that bracket each install guide | plate 46: `p46-corner` and `p46-knot` |

@@ -10,6 +10,7 @@
   "license": "MIT",
   "homepage": "https://github.com/KitheK/scorecard",
   "repository": "https://github.com/KitheK/scorecard",
+  "logo": "logo.png",
   "keywords": [
     "documentation",
     "manual",
