@@ -3,8 +3,8 @@
   "parts": [
     {
       "id": "skill",
-      "title": "Cursor skill",
-      "role": "Interview and scaffold",
+      "title": "Agent skill",
+      "role": "Interview and scaffold (Claude / Codex / Copilot / Cursor)",
       "path": "skills/scorecard/SKILL.md",
       "provenance": "draft",
       "source": "generated"

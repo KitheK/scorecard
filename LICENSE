@@ -1,23 +1,21 @@
-Creative Commons Attribution-NonCommercial 4.0 International
+MIT License
 
 Copyright (c) 2026 Kithe
 
-Scorecard (skill, Cursor/Claude/Codex plugin packaging, site kit, CLI, and
-related documentation in this repository) is owned by Kithe.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-You may use, copy, modify, and share this material for NonCommercial purposes
-only, subject to the Creative Commons Attribution-NonCommercial 4.0
-International Public License (CC BY-NC 4.0). Commercial use requires a separate
-written license from the copyright holder.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-Full license text: https://creativecommons.org/licenses/by-nc/4.0/legalcode
-
-Human-readable summary: https://creativecommons.org/licenses/by-nc/4.0/
-
-Attribution — when you share or adapt Scorecard, retain copyright notice,
-credit Kithe, link to this license, and indicate if changes were made.
-
-NonCommercial — not primarily intended for or directed toward commercial
-advantage or monetary compensation.
-
-Third-party fonts and ornaments under LICENSES/ keep their own terms.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

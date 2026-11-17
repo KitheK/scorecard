@@ -1,111 +1,130 @@
 # Scorecard
 
 **Descriptive project manuals for any codebase.**  
-What was built, what works, what doesn’t, and how to run it — in about two minutes on the Scorecard page. **Never a grade.**
+What was built, what works, what doesn’t, and how to run it — readable in about two minutes. **Never a grade.**
 
-License: **[CC BY-NC 4.0](LICENSE)** — © Kithe; free for non-commercial use with attribution. Commercial use needs a separate license.
-
-Reference Full manual: [Libretto](https://github.com/KitheK/libretto) · live [/make](https://499team1.com/make)
+MIT licensed · [github.com/KitheK/scorecard](https://github.com/KitheK/scorecard)
 
 ---
 
-## Install the plugin (30 seconds)
+## What it does
 
-### Cursor (local test — do this before marketplace submit)
+Scorecard turns a repository into a short site that tells the truth about the work:
 
-```powershell
-New-Item -ItemType Directory -Force "$env:USERPROFILE\.cursor\plugins\local" | Out-Null
-Copy-Item -Recurse -Force . "$env:USERPROFILE\.cursor\plugins\local\scorecard"
-```
+- **The job** — one sentence for whom and what  
+- **Brief vs outcome** — intent against what actually shipped  
+- **Status per feature** — works / partial / stubbed / cut, plus the biggest gap  
+- **Built vs borrowed** — authored work vs libraries, templates, APIs, starters  
+- **Proof** — demo, screenshot, test, or metric (only when real)  
+- **Run it** — setup steps and a 60-second demo script  
+- **Next** — what you’d do with more time  
 
-macOS / Linux:
+An **agent skill** interviews you (infer-first, confirm-or-correct), scans the repo with bounds, scaffolds a Vite kit, and fills JSON with **provenance** tags. You finish in **Write mode** — a diary editor in the browser — then publish a static build. Agents never mark claims `confirmed`; only you do, in Review.
+
+Sizes: **Lite** (one page) · **Standard** (chapters when earned) · **Full** (long-lived / multi-service). Empty plates stay gated so a weekend hackathon never gets a fake branch history.
+
+---
+
+## Why it needs to exist
+
+READMEs and slide decks flatten finished work into either hype or silence. Course markers, hackathon judges, teammates, and future-you need the same thing: a honest map of what is real, what is mocked, and how to run it — without a score, a leaderboard, or a performance review.
+
+AI coding tools make it easy to *generate* docs that sound finished. Scorecard exists so those tools are steered toward **evidence and provenance** instead of invented polish: draft until you confirm, inferred only with a path or commit, authored content never silently overwritten on refresh.
+
+---
+
+## Who it’s for
+
+| Audience | Why Scorecard fits |
+|----------|--------------------|
+| **Students & coursework** | Rubric / requirements map with paths; partials stay partial |
+| **Hackathon teams** | Lite page + 90-second demo script; stubs called out |
+| **Solo builders** | Personal CLIs and side projects without overselling |
+| **Small teams** | Shared ownership areas; no invented individual glory |
+| **Anyone using Claude, Codex, Copilot, Cursor, or similar** | Same skill workflow; install into that agent’s skill/agent folder |
+
+Reference Full manual: [Libretto](https://github.com/KitheK/libretto) · live [499team1.com/make](https://499team1.com/make)
+
+---
+
+## In-app demos (dogfood)
+
+The kit ships **working Scorecard pages for specific repo shapes** — open them inside the product, don’t imagine them from docs.
 
 ```bash
-mkdir -p ~/.cursor/plugins/local
-cp -R . ~/.cursor/plugins/local/scorecard
+npm install
+npx scorecard demos
 ```
 
-Reload Cursor (**Developer: Reload Window**). Confirm **scorecard** under Customize → Skills.
+Opens `/demos`:
 
-### Cursor Marketplace / community
+| Demo | Repo shape |
+|------|------------|
+| **Hackathon weekend** | Greenfield demo; mocked bank sync |
+| **Personal CLI** | Solo tool; brittle edges called out |
+| **Course assignment** | Rubric map; partial persistence |
+| **Team product** | Multi-owner areas; no fake metrics |
+| **No README** | Sparse repo; draft-heavy until author voice |
 
-1. Repo: https://github.com/KitheK/scorecard  
-2. Community: [cursor.directory/plugins/new](https://cursor.directory/plugins/new)  
-3. Official (after local verify): [cursor.com/marketplace/publish](https://cursor.com/marketplace/publish)
-
-Manifests: `.cursor-plugin/plugin.json` · root `plugin.json` · skill `skills/scorecard/SKILL.md` · `logo.svg`
-
-### Claude Code / Codex
-
-Copy `skills/scorecard/` into `.claude/skills/scorecard/` or `.agents/skills/scorecard/`.
+Deep links: `/demos/hackathon`, `/demos/personal-cli`, `/demos/assignment`, `/demos/team`, `/demos/no-readme`.
 
 ---
 
-## One prompt after install
+## How the pieces fit
+
+| Piece | Role |
+|-------|------|
+| **Skill** (`skills/scorecard`) | Interview → scan → scaffold → provenance-tagged JSON |
+| **Kit** (this app) | Renders the manual; Lite / Standard / Full |
+| **Write mode** | `npx scorecard dev` → edit like a diary, Confirm in Review |
+| **CLI** | `check` · `dev` · `demos` · `build` · `export` · `refresh` · `look` |
+
+### Provenance
+
+| Tag | Meaning |
+|-----|---------|
+| `confirmed` | You verified it in Write → Review (agents never set this) |
+| `inferred` | Evidence-backed (file path or commit) |
+| `draft` | Unreviewed agent text |
+
+---
+
+## Use with your agent
+
+Canonical skill: [`skills/scorecard/`](skills/scorecard/). Copy that folder into the path your tool loads:
+
+| Tool | Install path |
+|------|----------------|
+| **Claude Code** | `.claude/skills/scorecard/` |
+| **Codex** | `.agents/skills/scorecard/` |
+| **GitHub Copilot** | `.github/skills/scorecard/` (agent: `.github/agents/scorecard.agent.md`) |
+| **Cursor** | `.cursor/plugins/local/scorecard/` (or this repo as a plugin root) |
+
+This repo already mirrors the skill into `.claude/`, `.agents/`, and `.github/` so clones work out of the box. Re-sync after editing the canonical skill:
+
+```bash
+node scripts/sync-agent-skills.mjs
+```
+
+**Example prompt (any of those tools):**
 
 > Use the scorecard skill on this repo. Infer first, confirm with me, scaffold `./scorecard`, then hand off to Write mode.
 
 ---
 
-## What you get
-
-| Piece | Role |
-|-------|------|
-| **Agent skill** | Interview → scan → scaffold → provenance-tagged JSON |
-| **Site kit** | Vite + React app; Lite / Standard / Full |
-| **Write mode** | Diary editing in the browser (`npx scorecard dev`) |
-| **CLI** | `check` · `dev` · `build` · `export` · `refresh` |
-
-### Always on the Scorecard page
-
-- The job · brief vs outcome · status per feature · built vs borrowed · proof · run-it · next
-
-### Honesty (provenance)
-
-| Tag | Meaning |
-|-----|---------|
-| `confirmed` | Author verified in Write → Review (agent never sets this) |
-| `inferred` | Evidence-backed (path or commit) |
-| `draft` | Unreviewed agent text |
-
----
-
-## Kit setup (once per project)
+## Kit commands
 
 Requires **Node 20+**.
 
 ```bash
-# Inside the project you are documenting — after the skill scaffolds, or manually:
-git clone --depth 1 https://github.com/KitheK/scorecard.git scorecard
-cd scorecard
 npm install
 npx scorecard check
-npx scorecard dev
+npx scorecard demos    # see dogfood packs
+npx scorecard dev      # Write mode
+npx scorecard build    # static dist/ (no Write / save)
 ```
 
-| Command | Purpose |
-|---------|---------|
-| `npx scorecard dev` | Local Write mode (do not expose publicly) |
-| `npx scorecard build` | Static `dist/` — no Write / save |
-| `npx scorecard export` | Printable export + README badge snippet |
-| `npx scorecard refresh` | Reminder to re-scan via the skill |
-| `npx scorecard check` | Validate content / provenance rules |
-
-### Sizes
-
-| Size | For |
-|------|-----|
-| **Lite** | Hackathons, small assignments |
-| **Standard** | Most projects |
-| **Full** | Long-lived / multi-service (Libretto-scale) |
-
----
-
-## Marketplace notes
-
-- Submit **community** listing first for feedback; official Cursor Marketplace is curated and stricter.
-- This repo is the public artifact (plugin + kit). Libretto stays the demo site only.
-- License is **CC BY-NC 4.0** (you keep ownership; others may use non-commercially). Some official marketplaces prefer OSI open-source licenses — if a review rejects on license grounds, that is the tradeoff.
+To document *another* project, scaffold a `scorecard/` kit into that project (skill step 6) or clone this repo beside it and fill `content/*.json`.
 
 ---
 

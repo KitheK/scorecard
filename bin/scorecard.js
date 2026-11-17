@@ -12,6 +12,7 @@ function usage() {
 
 Commands:
   scorecard dev       Install if needed, start Write mode, open browser
+  scorecard demos     Start the kit and open in-app dogfood demos
   scorecard build     Production static build (no Write/save)
   scorecard export    Print instructions + README badge snippet
   scorecard refresh   Reminder: re-scan via skill; open /write review
@@ -96,8 +97,27 @@ function cmdExport() {
   console.log("Wrote EXPORT-README-SNIPPET.md");
 }
 
+async function cmdDemos() {
+  nodeOk();
+  await ensureInstall();
+  const port = await freePort(5199);
+  console.log(`Dogfood demos: http://127.0.0.1:${port}/demos`);
+  const child = spawn("npx", ["vite", "--port", String(port)], {
+    cwd: root,
+    shell: true,
+    stdio: "inherit",
+  });
+  setTimeout(() => openBrowser(`http://127.0.0.1:${port}/demos`), 1500);
+  const stop = () => {
+    child.kill("SIGTERM");
+    process.exit(0);
+  };
+  process.on("SIGINT", stop);
+  process.on("SIGTERM", stop);
+}
+
 function cmdRefresh() {
-  console.log("Refresh: re-run the scorecard Cursor skill against the project repo.");
+  console.log("Refresh: re-run the scorecard skill (Claude, Codex, Copilot, Cursor, or any agent that loaded it).");
   console.log("It must propose a diff for authored content — never overwrite.");
   console.log("Then open Write → Review: npx scorecard dev");
 }
@@ -168,6 +188,7 @@ function cmdLook() {
 const cmd = process.argv[2] ?? "help";
 const map = {
   dev: cmdDev,
+  demos: cmdDemos,
   build: cmdBuild,
   export: cmdExport,
   refresh: cmdRefresh,

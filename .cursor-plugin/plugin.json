@@ -1,7 +1,7 @@
 {
   "name": "scorecard",
   "displayName": "Scorecard",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Turn any repo into a descriptive project manual with Write mode. Never grades.",
   "author": {
     "name": "Kithe",
@@ -9,7 +9,7 @@
   },
   "homepage": "https://github.com/KitheK/scorecard",
   "repository": "https://github.com/KitheK/scorecard",
-  "license": "CC-BY-NC-4.0",
+  "license": "MIT",
   "logo": "logo.svg",
   "keywords": [
     "documentation",
@@ -18,6 +18,9 @@
     "hackathon",
     "coursework",
     "provenance",
-    "write-mode"
+    "write-mode",
+    "claude",
+    "codex",
+    "copilot"
   ]
 }

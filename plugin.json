@@ -2,12 +2,12 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "scorecard",
   "description": "Turn any repo into a descriptive project manual with Write mode. Never grades.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": {
     "name": "Kithe",
     "url": "https://github.com/KitheK"
   },
-  "license": "CC-BY-NC-4.0",
+  "license": "MIT",
   "homepage": "https://github.com/KitheK/scorecard",
   "repository": "https://github.com/KitheK/scorecard",
   "keywords": [
@@ -17,6 +17,9 @@
     "hackathon",
     "coursework",
     "provenance",
-    "write-mode"
+    "write-mode",
+    "claude",
+    "codex",
+    "copilot"
   ]
 }

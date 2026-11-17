@@ -128,6 +128,19 @@ a {
   color: var(--muted);
 }
 
+.demo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.demo-list li {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--rule);
+}
+
 .feature-row {
   display: grid;
   grid-template-columns: 7rem 1fr;

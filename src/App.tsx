@@ -4,6 +4,7 @@ import { ContentProvider } from "./lib/ContentContext";
 import { ChapterPage } from "./pages/ChapterPage";
 import { ContentsPage } from "./pages/ContentsPage";
 import { ExportPage } from "./pages/ExportPage";
+import { DemoPackPage, DemosIndexPage } from "./pages/DemosPage";
 import { ScorecardPage } from "./pages/ScorecardPage";
 import { WritePage } from "./write/WritePage";
 
@@ -14,6 +15,8 @@ export function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<ScorecardPage />} />
+            <Route path="/demos" element={<DemosIndexPage />} />
+            <Route path="/demos/:id" element={<DemoPackPage />} />
             <Route path="/contents" element={<ContentsPage />} />
             <Route path="/chapters/:slug" element={<ChapterPage />} />
             <Route path="/export" element={<ExportPage />} />

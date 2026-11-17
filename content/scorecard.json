@@ -12,7 +12,7 @@
     "source": "generated"
   },
   "outcome": {
-    "text": "A Vite kit, Write mode, and Cursor skill that scaffold Lite, Standard, or Full sites from an interview.",
+    "text": "A Vite kit, Write mode, and agent skill (Claude, Codex, Copilot, Cursor, …) that scaffold Lite, Standard, or Full sites from an interview.",
     "provenance": "draft",
     "source": "generated"
   },
@@ -59,7 +59,7 @@
     "source": "generated"
   },
   "next": {
-    "text": "Dogfood on more project types; polish Look gallery.",
+    "text": "Keep /demos packs honest as the product evolves; polish Look gallery.",
     "provenance": "draft",
     "source": "generated"
   }

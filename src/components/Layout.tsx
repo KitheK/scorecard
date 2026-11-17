@@ -15,6 +15,7 @@ export function Layout() {
           <NavLink to="/" end>
             Summary
           </NavLink>
+          <NavLink to="/demos">Demos</NavLink>
           {size !== "lite" ? <NavLink to="/contents">Contents</NavLink> : null}
           <NavLink to="/export">Export</NavLink>
           {import.meta.env.DEV ? <NavLink to="/write">Write</NavLink> : null}
