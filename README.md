@@ -65,23 +65,23 @@ AI tools make it easy to *generate* docs that sound finished. Scorecard steers t
 
 ## A tour
 
-These are real screenshots of the kit in this repo, running `npx scorecard-kit dev` on its own `content/`.
+These are real screenshots of the kit in this repo, from `npx scorecard-kit dev` on its own `content/` (first run opens the interview when answers are still empty).
 
 <table>
   <tr>
     <td width="50%" valign="top">
-      <img src="docs/assets/screens/summary.png" alt="The Scorecard summary page: the job, brief and outcome, status per feature and built vs borrowed, each claim tagged draft">
-      <p><b>The summary page.</b> Job, brief vs outcome, status per feature and built vs borrowed. Every claim shows its provenance tag.</p>
+      <img src="docs/assets/screens/interview.png" alt="The local interview form on 127.0.0.1: guide title, sliders for team size and time horizon, and rounded choice chips in Stage A">
+      <p><b>Interview</b> (<code>/interview</code>, dev only). A Libretto-styled local form — sliders for team size and build time, your <b>guide title</b> for <code>&lt;Name&gt; Guide</code>, then stages B–E. Saves to <code>content/interview.json</code> and exports <code>interview-handoff.json</code> on Done.</p>
     </td>
     <td width="50%" valign="top">
-      <img src="docs/assets/screens/write.png" alt="Write mode, Review tab: each draft claim listed with a Confirm button">
-      <p><b>Write mode</b> (<code>/write</code>, dev only). Edit like a diary, choose the look, and confirm claims in Review. Saves go straight to <code>content/*.json</code>.</p>
+      <img src="docs/assets/screens/write.png" alt="Write mode with edit, look and review tabs; rounded controls and diary prose editor">
+      <p><b>Write mode</b> (<code>/write</code>, dev only). Opens after the interview. Edit like a diary, choose the look, and confirm claims in Review. Saves go straight to <code>content/*.json</code>.</p>
     </td>
   </tr>
   <tr>
     <td width="50%" valign="top">
-      <img src="docs/assets/screens/demo-hackathon.png" alt="The hackathon demo pack: a Lite page where receipt upload works and bank sync is stubbed">
-      <p><b>Demo packs</b> (<code>/demos</code>). Working pages for five repo shapes. This is the hackathon one: receipt upload works, bank sync is stubbed, and the page says so.</p>
+      <img src="docs/assets/screens/summary.png" alt="The Scorecard summary page: the job, brief and outcome, status per feature and built vs borrowed, each claim tagged draft">
+      <p><b>The summary page.</b> Job, brief vs outcome, status per feature and built vs borrowed. Every claim shows its provenance tag.</p>
     </td>
     <td width="50%" valign="top">
       <img src="docs/assets/screens/contents.png" alt="The contents page of a Standard manual: Orientation and Shape parts with their chapters">
