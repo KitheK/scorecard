@@ -1,6 +1,12 @@
-import { useMemo } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { ArchitectureFile, ArchitectureGroup, ArchitectureNode } from "../../lib/schemas";
-import { applyArchitectureLayout, boxHeight, plateLayoutMetrics, tightViewBox } from "../../generators/architectureLayout";
+import {
+  applyArchitectureLayout,
+  boxHeight,
+  metricsForCanvas,
+  plateLayoutMetrics,
+  tightViewBox,
+} from "../../generators/architectureLayout";
 import { edgeRoute } from "./architectureRouting";
 import { Box, Diagram, Flow, Legend, Store, T, VBand, tones, type ToneId } from "./kit";
 
@@ -17,15 +23,6 @@ function toneId(tone?: string): ToneId {
     runtime: "service",
   };
   return map[tone ?? ""] ?? "service";
-}
-
-function subline(node: ArchitectureNode): string[] {
-  const role = node.detail?.role;
-  if (role && role.toLowerCase() !== node.label.toLowerCase()) {
-    const short = role.length > 28 ? `${role.slice(0, 27)}…` : role;
-    return [`(${short})`];
-  }
-  return [];
 }
 
 function groupColumns(
@@ -70,24 +67,49 @@ export function ArchitectureDiagramSvg({
   file: ArchitectureFile;
   pick?: (id: string) => void;
   selected?: (id: string) => boolean;
+  selectedId?: string | null;
   animateEdges?: boolean;
 }) {
-  const laidOut = useMemo(() => applyArchitectureLayout(file), [file]);
+  const hostRef = useRef<HTMLDivElement>(null);
+  const [canvasW, setCanvasW] = useState(0);
+
+  useLayoutEffect(() => {
+    const el = hostRef.current;
+    if (!el) return;
+    const measure = () => {
+      const raw = el.getBoundingClientRect().width;
+      const cap =
+        typeof window !== "undefined" ? Math.max(160, window.innerWidth - 32) : raw;
+      const w = Math.min(raw, cap);
+      if (w > 48) setCanvasW(Math.round(w));
+    };
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => measure());
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const m = useMemo(() => {
+    const fallback =
+      typeof window !== "undefined" ? Math.min(720, Math.max(200, window.innerWidth - 32)) : 640;
+    return metricsForCanvas(file, canvasW > 48 ? canvasW : fallback);
+  }, [file, canvasW]);
+  const laidOut = useMemo(() => applyArchitectureLayout(file, m), [file, m]);
   const nodes = laidOut.nodes;
-  const m = plateLayoutMetrics(nodes.length);
   const viewBox = tightViewBox(nodes, m);
   const legendTones = [...new Set(nodes.map((n) => toneId(n.tone)))].slice(0, 6);
   const legendW = legendTones.length * 108 + 24;
   const vbParts = viewBox.split(/\s+/).map(Number);
   const vbMaxX = vbParts[0] + vbParts[2];
+  const wide = vbParts[2] > canvasW * 1.05;
 
   return (
-    <div className="arch-diagram-viewport">
-      <Diagram
-        label={`Architecture ${file.figureId ?? "diagram"}`}
-        viewBox={viewBox}
-        preserveAspectRatio={nodes.length > 5 ? "xMidYMid slice" : "xMidYMid meet"}
-      >
+    <div
+      ref={hostRef}
+      className={wide ? "arch-diagram-viewport arch-diagram-viewport--scroll" : "arch-diagram-viewport"}
+    >
+      <Diagram label={`Architecture ${file.figureId ?? "diagram"}`} viewBox={viewBox} preserveAspectRatio="xMidYMid meet">
         <rect
           x={vbParts[0] + 6}
           y={m.legendY - 8}
@@ -111,45 +133,38 @@ export function ArchitectureDiagramSvg({
           />
         ))}
 
-        {nodes.map((node) => {
-          const h = boxHeight(node, m);
-          const lines = subline(node);
-          const partId = pick ? node.id : undefined;
-          const isData = node.tone === "data";
-          const common = {
-            x: node.x ?? 0,
-            y: node.y ?? 0,
-            w: m.boxW,
-            h,
-            title: node.label.toUpperCase(),
-            lines,
-            partId,
-            selected: selected?.(node.id),
-            onSelect: pick,
-            tone: toneId(node.tone),
-            titleSize: m.titleSize,
-            subSize: m.subSize,
-          };
-          return isData ? <Store key={node.id} {...common} /> : <Box key={node.id} {...common} />;
-        })}
+        <g className="arch-diagram__edges">
+          {laidOut.edges.map((edge, i) => {
+            const from = nodes.find((n) => n.id === edge.from);
+            const to = nodes.find((n) => n.id === edge.to);
+            if (!from || !to) return null;
+            const { points } = edgeRoute(from, to, m);
+            return <Flow key={`${edge.from}-${edge.to}-${i}`} points={points} animate={animateEdges} delay={i * 0.15} />;
+          })}
+        </g>
 
-        {laidOut.edges.map((edge, i) => {
-          const from = nodes.find((n) => n.id === edge.from);
-          const to = nodes.find((n) => n.id === edge.to);
-          if (!from || !to) return null;
-          const { points, labelAt } = edgeRoute(from, to, m);
-          return (
-            <Flow
-              key={`${edge.from}-${edge.to}-${i}`}
-              points={points}
-              label={edge.label}
-              labelAt={edge.label ? labelAt : undefined}
-              animate={animateEdges}
-              delay={i * 0.15}
-              labelSize={m.subSize}
-            />
-          );
-        })}
+        <g className="arch-diagram__nodes">
+          {nodes.map((node) => {
+            const h = boxHeight(node, m);
+            const partId = pick ? node.id : undefined;
+            const isData = node.tone === "data";
+            const common = {
+              x: node.x ?? 0,
+              y: node.y ?? 0,
+              w: m.boxW,
+              h,
+              title: node.label.toUpperCase(),
+              lines: [] as string[],
+              partId,
+              selected: selected?.(node.id),
+              onSelect: pick,
+              tone: toneId(node.tone),
+              titleSize: m.titleSize,
+              subSize: m.subSize,
+            };
+            return isData ? <Store key={node.id} {...common} /> : <Box key={node.id} {...common} />;
+          })}
+        </g>
 
         {file.figureId ? (
           <T x={vbMaxX - 14} y={m.legendY + 12} anchor="end" fill={tones.paper.title} size={m.titleSize}>

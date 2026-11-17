@@ -1,3 +1,4 @@
+import { useSyncExternalStore } from "react";
 import { useContent } from "../lib/ContentContext";
 import type { ArchitectureFile } from "../lib/schemas";
 import { Claim } from "./Claim";
@@ -6,12 +7,23 @@ import { InteractiveArchitectureDiagram } from "./plates";
 import "./plates/architecture-plate.css";
 
 export type ArchitecturePlateProps = {
-  /** When omitted, uses bundle from ContentContext. */
   architecture?: ArchitectureFile;
   compact?: boolean;
   showOverview?: boolean;
   showTopology?: boolean;
 };
+
+function useNarrowPlate() {
+  return useSyncExternalStore(
+    (cb) => {
+      const mq = window.matchMedia("(max-width: 420px)");
+      mq.addEventListener("change", cb);
+      return () => mq.removeEventListener("change", cb);
+    },
+    () => window.matchMedia("(max-width: 420px)").matches,
+    () => false,
+  );
+}
 
 function frameVariant(raw: string): FrameVariant {
   if (raw === "pavot30" || raw === "lys33" || raw === "halo01" || raw === "coins46") return raw;
@@ -27,6 +39,7 @@ export function ArchitecturePlate({
   const { architecture: ctxArch, theme } = useContent();
   const architecture = architectureProp ?? ctxArch;
   const frame = frameVariant(theme.ornaments.plateFrame);
+  const narrow = useNarrowPlate();
   const figureId = architecture.figureId ?? "ARCH_001";
 
   if (!architecture.nodes.length) {
@@ -45,12 +58,19 @@ export function ArchitecturePlate({
           <Claim claim={architecture.overview} />
         </div>
       ) : null}
-      <NouveauFrame variant={frame} animate={theme.ornaments.footAnimate} scale={compact ? 0.9 : 1} gap={12}>
-        <InteractiveArchitectureDiagram file={architecture} compact={compact} showTopology={showTopology} />
-      </NouveauFrame>
+      <div className="architecture-plate__frame-host">
+        <NouveauFrame
+          className="architecture-plate__nouveau"
+          variant={frame}
+          animate={false}
+          scale={narrow ? 0.82 : 1}
+          gap={narrow ? 8 : 16}
+        >
+          <InteractiveArchitectureDiagram file={architecture} compact={compact} showTopology={showTopology} />
+        </NouveauFrame>
+      </div>
     </figure>
   );
 }
 
-/** @deprecated alias — WS4 should import `InteractiveArchitectureDiagram` from `./plates`. */
 export { InteractiveArchitectureDiagram } from "./plates";

@@ -14,18 +14,17 @@ type ComponentSpec = {
   role: string;
   evidence?: string;
   summary?: string;
-  /** If false, skip when path missing (default true). */
   required?: boolean;
 };
 
 const SCORECARD_COMPONENTS: ComponentSpec[] = [
   {
     id: "skill",
-    label: "Agent skill",
+    label: "Skill",
     path: "skills/scorecard/SKILL.md",
     group: "authoring",
     tone: "agent",
-    role: "Interview, scan, and content workflow",
+    role: "Interview, scan, content workflow",
     evidence: "skills/scorecard/SKILL.md",
   },
   {
@@ -47,6 +46,15 @@ const SCORECARD_COMPONENTS: ComponentSpec[] = [
     evidence: "vite.config.ts · vite-plugin-scorecard-save.ts",
   },
   {
+    id: "build",
+    label: "Build",
+    path: "package.json",
+    group: "delivery",
+    tone: "runtime",
+    role: "Production bundle to dist/",
+    evidence: "npm run build",
+  },
+  {
     id: "renderer",
     label: "Guide renderer",
     path: "src/App.tsx",
@@ -56,26 +64,8 @@ const SCORECARD_COMPONENTS: ComponentSpec[] = [
     evidence: "src/App.tsx",
   },
   {
-    id: "content",
-    label: "Content JSON",
-    path: "content/manual.json",
-    group: "data",
-    tone: "data",
-    role: "Authoritative content bundle",
-    evidence: "content/*.json",
-  },
-  {
-    id: "generators",
-    label: "Generators",
-    path: "src/generators/architecture.ts",
-    group: "application",
-    tone: "service",
-    role: "Architecture and timeline builders",
-    evidence: "src/generators/",
-  },
-  {
     id: "plates",
-    label: "Interactive plates",
+    label: "Plates",
     path: "src/components/plates/kit.tsx",
     group: "application",
     tone: "service",
@@ -83,23 +73,22 @@ const SCORECARD_COMPONENTS: ComponentSpec[] = [
     evidence: "src/components/plates/",
   },
   {
-    id: "schemas",
-    label: "Contracts",
-    path: "src/lib/schemas.ts",
+    id: "generators",
+    label: "Generators",
+    path: "src/generators/architecture.ts",
     group: "application",
     tone: "service",
-    role: "JSON schema types and validation",
-    evidence: "src/lib/schemas.ts",
+    role: "Architecture, timeline, contracts",
+    evidence: "src/generators/ · src/lib/schemas.ts",
   },
   {
-    id: "build",
-    label: "Build output",
-    path: "package.json",
-    group: "delivery",
-    tone: "runtime",
-    role: "Production bundle to dist/",
-    evidence: "npm run build",
-    summary: "Vite build; optional dist/ after build",
+    id: "content",
+    label: "Content JSON",
+    path: "content/manual.json",
+    group: "data",
+    tone: "data",
+    role: "Authoritative content bundle",
+    evidence: "content/*.json",
   },
 ];
 
@@ -139,11 +128,7 @@ export function scanArchitectureGraph(root: string = process.cwd()): GraphInput 
 
   for (const spec of SCORECARD_COMPONENTS) {
     if (nodes.length >= MAX_ARCHITECTURE_NODES) break;
-    if (!existsSync(join(root, spec.path))) {
-      if (spec.required) continue;
-      if (spec.id === "build") continue;
-      continue;
-    }
+    if (!existsSync(join(root, spec.path))) continue;
     nodes.push({
       id: spec.id,
       label: spec.label,
@@ -158,30 +143,9 @@ export function scanArchitectureGraph(root: string = process.cwd()): GraphInput 
     });
   }
 
-  if (existsSync(join(root, "src/interview"))) {
-    if (nodes.length < MAX_ARCHITECTURE_NODES) {
-      nodes.push({
-        id: "interview",
-        label: "Interview form",
-        path: "src/interview",
-        group: "client",
-        tone: "client",
-        detail: {
-          role: "Local onboarding web form",
-          evidence: "src/interview/",
-        },
-      });
-    }
-  }
-
-  if (existsSync(join(root, "dist/index.html")) && nodes.length < MAX_ARCHITECTURE_NODES) {
-    const build = nodes.find((n) => n.id === "build");
-    if (build?.detail) build.detail.evidence = "dist/index.html · npm run build";
-  }
-
   const byId = new Set(nodes.map((n) => n.id));
   const edges: GraphInput["edges"] = [];
-  const link = (from: string, to: string, label: string) => {
+  const link = (from: string, to: string, label?: string) => {
     if (byId.has(from) && byId.has(to)) edges.push({ from, to, label });
   };
 
@@ -193,9 +157,7 @@ export function scanArchitectureGraph(root: string = process.cwd()): GraphInput 
   link("content", "renderer", "drives");
   link("generators", "plates", "layout");
   link("plates", "renderer", "embeds");
-  link("schemas", "content", "validates");
   link("cli", "build", "builds");
-  link("dev-server", "build", "bundles");
 
   return {
     root,

@@ -85,8 +85,8 @@ export function ScorecardPage() {
       ) : null}
 
       {showArch ? (
-        <section className="panel" aria-labelledby="arch">
-          <h2 id="arch">How it fits together</h2>
+        <section className="panel" id="arch" aria-labelledby="arch-heading">
+          <h2 id="arch-heading">How it fits together</h2>
           <ArchitecturePlate />
         </section>
       ) : null}

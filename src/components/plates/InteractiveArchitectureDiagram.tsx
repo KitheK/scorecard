@@ -34,8 +34,14 @@ export function InteractiveArchitectureDiagram({
   return (
     <div className={compact ? "interactive-architecture interactive-architecture--compact" : "interactive-architecture"}>
       <InteractivePlate defaultPart={defaultPart} renderRail={(partId) => <DetailRail file={file} partId={partId} />}>
-        {({ pick, selected }) => (
-          <ArchitectureDiagramSvg file={file} pick={pick} selected={selected} animateEdges={!motionReduced} />
+        {({ pick, selected, partId }) => (
+          <ArchitectureDiagramSvg
+            file={file}
+            pick={pick}
+            selected={selected}
+            selectedId={partId}
+            animateEdges={!motionReduced}
+          />
         )}
       </InteractivePlate>
       {showTopology ? <TopologyPanel file={file} /> : null}

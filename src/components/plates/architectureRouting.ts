@@ -7,7 +7,7 @@ export function nodeRect(node: ArchitectureNode, m: PlateMetrics) {
   return { x: node.x ?? 0, y: node.y ?? 0, w: m.boxW, h };
 }
 
-/** Spine-friendly anchors: exit right, enter left when columns increase; else vertical. */
+/** Orthogonal spine routing so lines run in column gutters, not through boxes. */
 export function edgeRoute(
   from: ArchitectureNode,
   to: ArchitectureNode,
@@ -17,30 +17,52 @@ export function edgeRoute(
   const b = nodeRect(to, m);
   const dx = b.x - a.x;
 
-  let p1: [number, number];
-  let p2: [number, number];
+  let points: Array<[number, number]>;
 
-  if (dx > m.boxW * 0.4) {
-    p1 = [a.x + a.w, a.y + a.h / 2];
-    p2 = [b.x, b.y + b.h / 2];
-  } else if (dx < -m.boxW * 0.4) {
-    p1 = [a.x, a.y + a.h / 2];
-    p2 = [b.x + b.w, b.y + b.h / 2];
-  } else if (b.y > a.y) {
-    p1 = [a.x + a.w / 2, a.y + a.h];
-    p2 = [b.x + b.w / 2, b.y];
+  if (dx > m.boxW * 0.35) {
+    const gutter = a.x + a.w + (b.x - (a.x + a.w)) / 2;
+  const y1 = a.y + a.h / 2;
+  const y2 = b.y + b.h / 2;
+    points = [
+      [a.x + a.w, y1],
+      [gutter, y1],
+      [gutter, y2],
+      [b.x, y2],
+    ];
+  } else if (dx < -m.boxW * 0.35) {
+    const gutter = b.x + b.w + (a.x - (b.x + b.w)) / 2;
+    const y1 = a.y + a.h / 2;
+    const y2 = b.y + b.h / 2;
+    points = [
+      [a.x, y1],
+      [gutter, y1],
+      [gutter, y2],
+      [b.x + b.w, y2],
+    ];
+  } else if (b.y > a.y + a.h * 0.5) {
+    points = [
+      [a.x + a.w / 2, a.y + a.h],
+      [a.x + a.w / 2, b.y - 6],
+      [b.x + b.w / 2, b.y - 6],
+      [b.x + b.w / 2, b.y],
+    ];
   } else {
-    p1 = [a.x + a.w / 2, a.y];
-    p2 = [b.x + b.w / 2, b.y + b.h];
+    points = [
+      [a.x + a.w / 2, a.y],
+      [a.x + a.w / 2, b.y + b.h + 6],
+      [b.x + b.w / 2, b.y + b.h + 6],
+      [b.x + b.w / 2, b.y + b.h],
+    ];
   }
 
-  const mx = (p1[0] + p2[0]) / 2;
-  const my = (p1[1] + p2[1]) / 2;
-  const ex = p2[0] - p1[0];
-  const ey = p2[1] - p1[1];
+  const midIdx = Math.floor(points.length / 2);
+  const mid = points[midIdx];
+  const next = points[midIdx + 1] ?? points[midIdx];
+  const ex = next[0] - mid[0];
+  const ey = next[1] - mid[1];
   const len = Math.hypot(ex, ey) || 1;
-  const off = 14;
-  const labelAt: [number, number] = [mx + (-ey / len) * off, my + (ex / len) * off - 2];
+  const off = 0;
+  const labelAt: [number, number] = [mid[0] + (-ey / len) * off, mid[1] + (ex / len) * off];
 
-  return { points: [p1, p2], labelAt };
+  return { points, labelAt };
 }
