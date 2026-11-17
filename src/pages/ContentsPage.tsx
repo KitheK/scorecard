@@ -21,12 +21,12 @@ export function ContentsPage() {
   return (
     <main className="contents-page">
       <header className="chapter-head">
-        <p className="mono">
-          {projectName.toUpperCase()} / CONTENTS
-        </p>
-        <h1>Table of contents.</h1>
+        <p className="mono">SCORECARD KIT / CONTENTS</p>
+        <h1>Chapters in this guide.</h1>
         <p className="standfirst lede">
-          {manual.chapters.length} chapters, {totalWords.toLocaleString("en-US")} words — {guideTitle}.
+          This Standard specimen shows how <strong>{guideTitle}</strong> will read once an agent scaffolds the kit into a
+          target repo ({manual.chapters.length} chapters, {totalWords.toLocaleString("en-US")} words here). Use the{" "}
+          <strong>Contents</strong> menu (☰) in the header to open the table of contents without crowding the page.
         </p>
         <hr className="rule" />
       </header>

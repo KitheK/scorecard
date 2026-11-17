@@ -1,22 +1,36 @@
 {
   "schemaVersion": 1,
-  "projectName": "Capstone",
-  "title": "Capstone Guide",
+  "projectName": "Example App",
+  "title": "Example App Guide",
   "parts": [
-    { "id": "I", "title": "Orientation", "blurb": "What this site is for." },
-    { "id": "II", "title": "Shape", "blurb": "How the project is built." }
+    {
+      "id": "I",
+      "title": "Scorecard platform",
+      "blurb": "What the kit is for — agents, JSON content, and the local authoring loop."
+    },
+    {
+      "id": "II",
+      "title": "Guide structure",
+      "blurb": "How a generated Standard or Full manual is organized once scaffolded into your repo."
+    }
   ],
   "chapters": [
     {
       "slug": "01-job",
       "number": "01",
       "part": "I",
-      "title": "The job",
-      "standfirst": "What Scorecard is trying to do.",
+      "title": "What Scorecard does",
+      "standfirst": "A descriptive manual kit — not a grader. Agents scaffold; authors confirm in Write mode.",
       "blocks": [
         {
           "type": "p",
-          "text": "Scorecard is a descriptive manual generator. It interviews, scans, scaffolds, then lets you write.",
+          "text": "Scorecard turns a repository into a factual site: job, feature status, run steps, and optional manual chapters. Content lives as JSON under content/; this Vite app is the preview and Write surface.",
+          "provenance": "draft",
+          "source": "generated"
+        },
+        {
+          "type": "p",
+          "text": "Use npx scorecard-kit dev for local Write mode, scorecard-kit check before handoff, and scorecard-kit demos to compare specimen project shapes.",
           "provenance": "draft",
           "source": "generated"
         },
@@ -27,12 +41,12 @@
       "slug": "02-shape",
       "number": "02",
       "part": "II",
-      "title": "Technical shape",
-      "standfirst": "Parts and how they connect.",
+      "title": "How a guide is built",
+      "standfirst": "Your project name appears in the sidebar pixel wordmark; chapters are filled from interview + scan evidence.",
       "blocks": [
         {
           "type": "p",
-          "text": "The kit renders JSON. Generators fill architecture and timeline when evidence exists.",
+          "text": "Standard and Full sites use the Libretto-style shell: hamburger table of contents, chapter ruler, and editorial contents rows. Lite stays a single summary page.",
           "provenance": "draft",
           "source": "generated"
         },
@@ -45,6 +59,12 @@
     {
       "question": "Does Scorecard grade my project?",
       "answer": "No. It describes status and evidence only.",
+      "provenance": "draft",
+      "source": "generated"
+    },
+    {
+      "question": "Where does the product title come from?",
+      "answer": "manual.projectName drives the pixel wordmark and \"<Project Name> Guide\" title. Scorecard appears only as platform attribution in the footer.",
       "provenance": "draft",
       "source": "generated"
     }

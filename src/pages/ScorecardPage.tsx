@@ -1,18 +1,52 @@
+import { Link } from "react-router-dom";
 import { Claim } from "../components/Claim";
 import { ArchitecturePlate } from "../components/ArchitecturePlate";
+import { manualTitleFromProjectName } from "../lib/schemas";
 import { useContent } from "../lib/ContentContext";
 
 export function ScorecardPage() {
   const { scorecard, run, decisions, stack, manual } = useContent();
   const showArch = scorecard.size !== "lite" && stack.parts.length >= 3;
   const projectName = manual.projectName?.trim() || scorecard.projectName?.trim() || "Project";
+  const guideTitle = manual.title?.trim() || manualTitleFromProjectName(projectName);
   const pageClass = scorecard.size === "lite" ? "page" : "manual-summary page";
+  const isManualShell = scorecard.size !== "lite";
 
   return (
     <main className={pageClass}>
+      {isManualShell ? (
+        <section className="panel platform-intro" aria-labelledby="platform">
+          <h2 id="platform">Scorecard kit — platform overview</h2>
+          <p className="lede">
+            You are previewing the <strong>Scorecard</strong> authoring kit (agent scaffold + local Write mode). This
+            page is the project summary; your generated manual uses the title <strong>{guideTitle}</strong> in the
+            sidebar. Use <strong>LIGHT / DARK</strong> for reading contrast and the <strong>Contents</strong> menu (☰) to
+            open chapters without losing focus on the page.
+          </p>
+          <ul className="platform-features">
+            <li>
+              <strong>Key commands:</strong> <span className="mono">npx scorecard-kit dev</span>,{" "}
+              <span className="mono">check</span>, <span className="mono">demos</span>, <span className="mono">build</span>
+            </li>
+            <li>
+              <Link to="/demos">Dogfood demos</Link> — specimen Lite / Standard / Full packs
+            </li>
+            <li>
+              <Link to="/contents">Manual chapters</Link> — Libretto-style layout for Standard and Full
+            </li>
+            {import.meta.env.DEV ? (
+              <li>
+                <Link to="/write">Write mode</Link> — confirm claims and look tokens on loopback only
+              </li>
+            ) : null}
+          </ul>
+        </section>
+      ) : null}
       <header className="scorecard-hero">
         <h1 className="display">{projectName}</h1>
-        <Claim claim={scorecard.job} as="p" />
+        <p className="lede">
+          <Claim claim={scorecard.job} as="span" />
+        </p>
       </header>
 
       <section className="panel" aria-labelledby="brief">
