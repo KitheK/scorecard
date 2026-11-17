@@ -63,8 +63,7 @@ export function ArchitecturePlate({
           className="architecture-plate__nouveau"
           variant={frame}
           animate={false}
-          scale={narrow ? 0.82 : 1}
-          gap={narrow ? 8 : 16}
+          gap={narrow ? 10 : 16}
         >
           <InteractiveArchitectureDiagram file={architecture} compact={compact} showTopology={showTopology} />
         </NouveauFrame>

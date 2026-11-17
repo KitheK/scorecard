@@ -1,10 +1,11 @@
 {
   "schemaVersion": 1,
-  "projectName": "Capstone",
-  "title": "Capstone Guide",
+  "projectName": "Scorecard",
+  "title": "Scorecard Guide",
   "parts": [
     { "id": "I", "title": "Orientation", "blurb": "What this site is for." },
-    { "id": "II", "title": "Shape", "blurb": "How the project is built." }
+    { "id": "II", "title": "Shape", "blurb": "How the project is built." },
+    { "id": "III", "title": "Blocks", "blurb": "Every renderer type in one chapter." }
   ],
   "chapters": [
     {
@@ -16,7 +17,7 @@
       "blocks": [
         {
           "type": "p",
-          "text": "Scorecard is a descriptive manual generator. It interviews, scans, scaffolds, then lets you write.",
+          "text": "Scorecard is a *descriptive* manual generator. It interviews, scans, scaffolds, then lets you [write in dev mode](/write).",
           "provenance": "draft",
           "source": "generated"
         },
@@ -36,15 +37,74 @@
           "provenance": "draft",
           "source": "generated"
         },
+        { "type": "figure", "id": "ARCH_001", "caption": "Interactive architecture plate", "provenance": "draft", "source": "generated" },
         { "type": "architecture", "provenance": "draft", "source": "generated" },
         { "type": "timeline", "provenance": "draft", "source": "generated" }
-      ]
+      ],
+      "sources": ["content/architecture.json", "content/branches.json"]
+    },
+    {
+      "slug": "03-blocks",
+      "number": "03",
+      "part": "III",
+      "title": "Block gallery",
+      "standfirst": "Dogfood chapter exercising every ManualBlock type.",
+      "blocks": [
+        { "type": "h2", "text": "Media frames", "provenance": "draft", "source": "generated" },
+        {
+          "type": "live",
+          "mode": "screenshot",
+          "src": "/media/chapter-live.png",
+          "poster": "/media/chapter-live.png",
+          "chrome": { "routeLabel": "scorecard/chapters/03-blocks", "tabs": ["LIGHT", "DARK"] },
+          "caption": "Screenshot with Nouveau chrome; not a live iframe.",
+          "provenance": "draft",
+          "source": "authored"
+        },
+        {
+          "type": "shot",
+          "src": "/media/clips-strip.png",
+          "label": "SHOT",
+          "caption": "Framed still from the clips strip reference.",
+          "chrome": { "routeLabel": "media/clips" },
+          "provenance": "draft",
+          "source": "authored"
+        },
+        {
+          "type": "motion",
+          "gif": "/media/home-plate-light.png",
+          "poster": "/media/home-plate-light.png",
+          "caption": "Poster fallback stands in for a clip in kit dogfood.",
+          "label": "MOTION",
+          "provenance": "draft",
+          "source": "authored"
+        },
+        { "type": "h2", "text": "Hooks and desk", "provenance": "draft", "source": "generated" },
+        { "type": "decision", "id": "json-not-ts", "provenance": "draft", "source": "generated" },
+        { "type": "requirement", "provenance": "draft", "source": "generated" },
+        { "type": "contribution", "provenance": "draft", "source": "generated" },
+        { "type": "run", "provenance": "draft", "source": "generated" },
+        {
+          "type": "desk",
+          "kind": "nouveau",
+          "title": "Ornament desk in chapter",
+          "provenance": "draft",
+          "source": "authored"
+        }
+      ],
+      "sources": ["docs/contracts/4.6-media-blocks.md"]
     }
   ],
   "faqs": [
     {
       "question": "Does Scorecard grade my project?",
       "answer": "No. It describes status and evidence only.",
+      "provenance": "draft",
+      "source": "generated"
+    },
+    {
+      "question": "Where did the summary page go?",
+      "answer": "Full guides keep the Libretto home at /. Open /scorecard for the status table and run steps.",
       "provenance": "draft",
       "source": "generated"
     }

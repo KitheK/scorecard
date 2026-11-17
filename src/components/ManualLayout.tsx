@@ -71,8 +71,9 @@ export function ManualLayout({ children }: { children: ReactNode }) {
         </nav>
         <nav className="sidebar-util mono no-print" aria-label="Guide utilities">
           <NavLink to="/" end>
-            Summary
+            Home
           </NavLink>
+          <NavLink to="/scorecard">Summary</NavLink>
           <NavLink to="/contents">Contents</NavLink>
           <NavLink to="/demos">Demos</NavLink>
           <NavLink to="/export">Export</NavLink>
