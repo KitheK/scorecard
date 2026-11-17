@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
-  "title": "Scorecard",
+  "projectName": "Capstone",
+  "title": "Capstone Guide",
   "parts": [
     { "id": "I", "title": "Orientation", "blurb": "What this site is for." },
     { "id": "II", "title": "Shape", "blurb": "How the project is built." }

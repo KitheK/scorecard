@@ -3,13 +3,15 @@ import { ArchitecturePlate } from "../components/ArchitecturePlate";
 import { useContent } from "../lib/ContentContext";
 
 export function ScorecardPage() {
-  const { scorecard, run, decisions, stack } = useContent();
+  const { scorecard, run, decisions, stack, manual } = useContent();
   const showArch = scorecard.size !== "lite" && stack.parts.length >= 3;
+  const projectName = manual.projectName?.trim() || scorecard.projectName?.trim() || "Project";
+  const pageClass = scorecard.size === "lite" ? "page" : "manual-summary page";
 
   return (
-    <main className="page">
+    <main className={pageClass}>
       <header className="scorecard-hero">
-        <h1 className="display">SCORECARD</h1>
+        <h1 className="display">{projectName}</h1>
         <Claim claim={scorecard.job} as="p" />
       </header>
 

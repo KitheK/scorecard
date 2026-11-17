@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { chapterWordCount, manualTotalWords } from "../lib/manualStats";
+import { manualTitleFromProjectName } from "../lib/schemas";
 import { useContent } from "../lib/ContentContext";
 
 export function ContentsPage() {
@@ -11,24 +13,38 @@ export function ContentsPage() {
       </main>
     );
   }
+
+  const projectName = manual.projectName?.trim() || scorecard.projectName?.trim() || "Project";
+  const guideTitle = manual.title?.trim() || manualTitleFromProjectName(projectName);
+  const totalWords = manualTotalWords(manual);
+
   return (
-    <main className="page">
-      <h1>Contents</h1>
+    <main className="contents-page">
+      <header className="chapter-head">
+        <p className="mono">
+          {projectName.toUpperCase()} / CONTENTS
+        </p>
+        <h1>Table of contents.</h1>
+        <p className="standfirst lede">
+          {manual.chapters.length} chapters, {totalWords.toLocaleString("en-US")} words — {guideTitle}.
+        </p>
+        <hr className="rule" />
+      </header>
       {manual.parts.map((part) => (
-        <section key={part.id} className="panel">
-          <h2>
+        <section className="part-block" key={part.id} aria-labelledby={`part-${part.id}`}>
+          <h2 className="part-name" id={`part-${part.id}`}>
             {part.id}. {part.title}
           </h2>
-          {part.blurb ? <p>{part.blurb}</p> : null}
-          <div className="chapter-list">
-            {manual.chapters
-              .filter((c) => c.part === part.id)
-              .map((c) => (
-                <Link key={c.slug} to={`/chapters/${c.slug}`}>
-                  <span className="mono">{c.number}</span> {c.title}
-                </Link>
-              ))}
-          </div>
+          {part.blurb ? <p className="part-blurb">{part.blurb}</p> : null}
+          {manual.chapters
+            .filter((chapter) => chapter.part === part.id)
+            .map((chapter) => (
+              <Link className="contents-row" key={chapter.slug} to={`/chapters/${chapter.slug}`}>
+                <span className="mono">{chapter.number}</span>
+                <span className="contents-title">{chapter.title}</span>
+                <span className="mono">{chapterWordCount(chapter)} words</span>
+              </Link>
+            ))}
         </section>
       ))}
     </main>
