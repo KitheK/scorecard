@@ -11,6 +11,15 @@ export type QuestionField =
       optional?: boolean;
     }
   | {
+      kind: "slider";
+      key: string;
+      label: string;
+      prompt: string;
+      example?: string;
+      stops: Array<{ value: string; label: string }>;
+      optional?: boolean;
+    }
+  | {
       kind: "text" | "textarea";
       key: string;
       label: string;
@@ -45,9 +54,10 @@ export const INTERVIEW_STAGES: InterviewStage[] = [
       {
         kind: "text",
         key: "projectName",
-        label: "Working title",
-        prompt: "What should we call this project on the cover?",
-        example: 'Your repo folder name, product codename, or “Northstar API” — we will title the guide “<Name> Guide”.',
+        label: "Guide title",
+        prompt: "What should we call your documentation guide?",
+        example:
+          'The name readers see on the manual — repo name, product name, or “Northstar API”. We publish it as “<Name> Guide”.',
         placeholder: "e.g. Conductor",
       },
       {
@@ -68,23 +78,27 @@ export const INTERVIEW_STAGES: InterviewStage[] = [
         ],
       },
       {
-        kind: "choice",
+        kind: "slider",
         key: "A2",
         label: "Who built it",
-        prompt: "Who had their hands on the keyboard?",
-        options: [
-          { value: "solo", label: "Mostly me" },
-          { value: "small team", label: "Small team (2–6)" },
-          { value: "larger", label: "Larger group" },
-          { value: "solo-in-team", label: "Solo inside a bigger org" },
+        prompt: "Slide to the team size that matches how you actually worked.",
+        example: "Stops map to profile size bands the agent uses for tone and attribution.",
+        stops: [
+          { value: "solo", label: "Just me" },
+          { value: "small team", label: "Pair · about 2" },
+          { value: "small team", label: "Small team · 3–4" },
+          { value: "small team", label: "Team · 5–6" },
+          { value: "larger", label: "Larger · 7 or more" },
+          { value: "solo-in-team", label: "Mostly me inside a bigger org" },
         ],
       },
       {
         kind: "choice",
         key: "A3",
         label: "Why this exists",
-        prompt: "What job is this guide doing for you?",
-        example: "Portfolio pieces emphasize story; handoff pieces emphasize runbooks.",
+        prompt: "What job is this guide doing for you — and who asked for it?",
+        example:
+          "This choice steers story vs runbook vs pitch. Future exports (memo, slide deck, short pitch) will reuse the same answer.",
         options: [
           { value: "submission", label: "Submit for grading / review" },
           { value: "portfolio", label: "Portfolio piece" },
@@ -108,13 +122,15 @@ export const INTERVIEW_STAGES: InterviewStage[] = [
         ],
       },
       {
-        kind: "choice",
+        kind: "slider",
         key: "A5",
         label: "Time horizon",
-        prompt: "How long did this take to build (roughly)?",
-        options: [
+        prompt: "How long were you in build mode for this version?",
+        example: "Rough is fine — the slider snaps to sensible bands.",
+        stops: [
           { value: "day", label: "About a day" },
-          { value: "weekend-week", label: "A weekend or week" },
+          { value: "weekend-week", label: "A weekend" },
+          { value: "weekend-week", label: "About a week" },
           { value: "weeks", label: "Several weeks" },
           { value: "months+", label: "Months or longer" },
         ],

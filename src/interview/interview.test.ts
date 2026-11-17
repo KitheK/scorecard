@@ -8,9 +8,19 @@ import {
   type InterviewFile,
 } from "../lib/schemas";
 import { assembleInterviewFile, depthFromAnswers, profileFromAnswers } from "./merge";
-import { questionsForStage, visibleStageList } from "./questions";
+import { INTERVIEW_STAGES, questionsForStage, visibleStageList } from "./questions";
 
 describe("WS2 interview", () => {
+  it("sliders expose discrete stops for team size and time", () => {
+    const stageA = INTERVIEW_STAGES.find((s) => s.id === "A")!;
+    const a2 = stageA.questions.find((q) => q.key === "A2");
+    const a5 = stageA.questions.find((q) => q.key === "A5");
+    expect(a2?.kind).toBe("slider");
+    expect(a5?.kind).toBe("slider");
+    if (a2?.kind === "slider") expect(a2.stops.length).toBeGreaterThanOrEqual(5);
+    if (a5?.kind === "slider") expect(a5.stops.length).toBe(5);
+  });
+
   it("visible stages respect depth", () => {
     expect(visibleStageList("quick").map((s) => s.id)).toEqual(["A", "B", "E", "N"]);
     expect(visibleStageList("deep").map((s) => s.id)).toContain("D");

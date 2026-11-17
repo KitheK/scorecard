@@ -66,6 +66,7 @@ export function InterviewPage() {
     for (const stage of INTERVIEW_STAGES) {
       for (const q of stage.questions) {
         init[q.key] = initialValue(interview, q.key);
+        init[`${q.key}_label`] = readAnswerValue(interview.answers, `${q.key}_label`);
       }
     }
     return init;
@@ -156,7 +157,7 @@ export function InterviewPage() {
         </p>
         {interview.profile.projectName ? (
           <p className="mono interview-subtitle">
-            Working title: <span className="interview-project">{interview.profile.projectName} Guide</span>
+            Guide title: <span className="interview-project">{interview.profile.projectName} Guide</span>
           </p>
         ) : null}
       </header>
@@ -194,8 +195,15 @@ export function InterviewPage() {
                 key={q.key}
                 field={q}
                 value={draft[q.key] ?? ""}
+                labelValue={draft[`${q.key}_label`] ?? ""}
                 hint={provenanceHint(interview, q.key)}
-                onChange={(v) => setDraft((d) => ({ ...d, [q.key]: v }))}
+                onChange={(v, label) =>
+                  setDraft((d) => ({
+                    ...d,
+                    [q.key]: v,
+                    ...(label ? { [`${q.key}_label`]: label } : {}),
+                  }))
+                }
               />
             ))}
           </div>
@@ -231,13 +239,15 @@ export function InterviewPage() {
 function InterviewField({
   field,
   value,
+  labelValue = "",
   hint,
   onChange,
 }: {
   field: QuestionField;
   value: string;
+  labelValue?: string;
   hint: string | null;
-  onChange: (v: string) => void;
+  onChange: (v: string, label?: string) => void;
 }) {
   const id = `iq-${field.key}`;
   return (
@@ -251,6 +261,8 @@ function InterviewField({
       {hint ? <p className="interview-inferred">{hint}</p> : null}
       {field.kind === "choice" ? (
         <ChoiceGroup id={id} field={field} value={value} onChange={onChange} />
+      ) : field.kind === "slider" ? (
+        <SliderGroup id={id} field={field} value={value} label={labelValue} onChange={onChange} />
       ) : field.kind === "textarea" ? (
         <textarea
           id={id}
@@ -270,6 +282,61 @@ function InterviewField({
           onChange={(e) => onChange(e.target.value)}
         />
       )}
+    </div>
+  );
+}
+
+function SliderGroup({
+  id,
+  field,
+  value,
+  label,
+  onChange,
+}: {
+  id: string;
+  field: Extract<QuestionField, { kind: "slider" }>;
+  value: string;
+  label: string;
+  onChange: (v: string, label?: string) => void;
+}) {
+  const { stops } = field;
+  let index = 0;
+  if (label) {
+    const byLabel = stops.findIndex((s) => s.label === label);
+    if (byLabel >= 0) index = byLabel;
+  } else if (value) {
+    const byValue = stops.findIndex((s) => s.value === value);
+    if (byValue >= 0) index = byValue;
+  }
+  index = Math.min(Math.max(index, 0), stops.length - 1);
+  const current = stops[index] ?? stops[0];
+
+  return (
+    <div className="interview-slider" role="group" aria-labelledby={id}>
+      <p className="interview-slider-readout mono" aria-live="polite">
+        {current.label}
+      </p>
+      <input
+        id={id}
+        type="range"
+        className="interview-range"
+        min={0}
+        max={stops.length - 1}
+        step={1}
+        value={index}
+        onChange={(e) => {
+          const next = stops[Number(e.target.value)];
+          if (next) onChange(next.value, next.label);
+        }}
+        aria-valuetext={current.label}
+      />
+      <div className="interview-slider-ticks mono" aria-hidden>
+        {stops.map((s, i) => (
+          <span key={`${s.value}-${i}`} className={i === index ? "is-active" : undefined}>
+            {i + 1}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
