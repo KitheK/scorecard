@@ -84,6 +84,7 @@ export function T({
   fill = INK,
   size = 11,
   anchor = "start",
+  className,
 }: {
   x: number;
   y: number;
@@ -91,9 +92,10 @@ export function T({
   fill?: string;
   size?: number;
   anchor?: "start" | "middle" | "end";
+  className?: string;
 }) {
   return (
-    <text x={x} y={y} fill={fill} fontSize={size} textAnchor={anchor} fontFamily={MONO}>
+    <text x={x} y={y} fill={fill} fontSize={size} textAnchor={anchor} fontFamily={MONO} className={className}>
       {children}
     </text>
   );
@@ -128,6 +130,7 @@ export function VBand({
   x,
   y,
   h,
+  w = 26,
   name,
   tone = "edge",
   size = 11,
@@ -135,25 +138,26 @@ export function VBand({
   x: number;
   y: number;
   h: number;
+  w?: number;
   name: string;
   tone?: ToneId;
   size?: number;
 }) {
   const t = tones[tone];
-  const label = name.length > 11 ? `${name.slice(0, 10)}…` : name;
+  const cx = x + w / 2;
   return (
-    <g>
-      <rect x={x} y={y} width={24} height={h} rx={2} fill={t.fill} stroke={t.stroke} strokeWidth="1.25" />
+    <g className="arch-diagram__band" aria-hidden="true">
+      <rect x={x} y={y} width={w} height={h} rx={2} fill={t.fill} stroke={t.stroke} strokeWidth="1.25" />
       <text
-        x={x + 12}
+        x={cx}
         y={y + h / 2}
         fill={t.title}
         fontSize={size}
         textAnchor="middle"
         fontFamily={MONO}
-        transform={`rotate(-90 ${x + 12} ${y + h / 2})`}
+        transform={`rotate(-90 ${cx} ${y + h / 2})`}
       >
-        {label}
+        {name}
       </text>
     </g>
   );
@@ -188,10 +192,6 @@ export function Legend({
   );
 }
 
-function clipId(prefix: string, x: number, y: number) {
-  return `arch-clip-${prefix}-${Math.round(x)}-${Math.round(y)}`;
-}
-
 export function Store({
   x,
   y,
@@ -221,16 +221,12 @@ export function Store({
   const stroke = selected ? BLUE : t.stroke;
   const width = selected ? 2 : 1.75;
   const innerW = w - 28;
-  const cid = clipId(partId ?? "store", x, y);
   return (
     <g
       className={partId ? `diagram-hit${selected ? " is-selected" : ""}` : undefined}
       filter={selected ? "url(#arch-select-glow)" : undefined}
       {...hitHandlers(partId, onSelect)}
     >
-      <clipPath id={cid}>
-        <rect x={x + 6} y={y + 6} width={w - 12} height={h - 12} />
-      </clipPath>
       <rect x={x} y={y + ry} width={w} height={Math.max(0, h - ry * 2)} fill={t.fill} stroke="none" />
       <path
         d={`M${x} ${y + ry} V${y + h - ry} A${w / 2} ${ry} 0 0 0 ${x + w} ${y + h - ry} V${y + ry}`}
@@ -239,19 +235,17 @@ export function Store({
         strokeWidth={width}
       />
       <ellipse cx={x + w / 2} cy={y + ry} rx={w / 2} ry={ry} fill={t.fill} stroke={stroke} strokeWidth={width} />
-      <g clipPath={`url(#${cid})`}>
-        <T x={x + 14} y={y + 32} fill={t.title} size={titleSize}>
-          {title.length > 16 ? `${title.slice(0, 15)}…` : title}
-        </T>
-        {lines.flatMap((line, index) => {
-          const { lines: fitted, size } = fitLines(line, innerW, subSize);
-          return fitted.map((fl, fi) => (
-            <T key={`${line}-${index}-${fi}`} x={x + 14} y={y + 50 + index * 16 + fi * 14} fill={t.body} size={size}>
-              {fl}
-            </T>
-          ));
-        })}
-      </g>
+      <T x={x + 14} y={y + 32} fill={t.title} size={titleSize} className="diagram-hit__title">
+        {title}
+      </T>
+      {lines.flatMap((line, index) => {
+        const { lines: fitted, size } = fitLines(line, innerW, subSize);
+        return fitted.map((fl, fi) => (
+          <T key={`${line}-${index}-${fi}`} x={x + 14} y={y + 50 + index * 16 + fi * 14} fill={t.body} size={size}>
+            {fl}
+          </T>
+        ));
+      })}
     </g>
   );
 }
@@ -283,31 +277,24 @@ export function Box({
   const t = tones[tone];
   const stroke = selected ? BLUE : t.stroke;
   const innerW = w - 24;
-  const titleShort = title.length > 18 ? `${title.slice(0, 17)}…` : title;
-  const cid = clipId(partId ?? "box", x, y);
   return (
     <g
       className={partId ? `diagram-hit${selected ? " is-selected" : ""}` : undefined}
       filter={selected ? "url(#arch-select-glow)" : undefined}
       {...hitHandlers(partId, onSelect)}
     >
-      <clipPath id={cid}>
-        <rect x={x + 4} y={y + 4} width={w - 8} height={h - 8} />
-      </clipPath>
       <rect x={x} y={y} width={w} height={h} fill={t.fill} stroke={stroke} strokeWidth={selected ? 2 : 1.75} />
-      <g clipPath={`url(#${cid})`}>
-        <T x={x + 12} y={y + 22} fill={t.title} size={titleSize}>
-          {titleShort}
-        </T>
-        {lines.flatMap((line, index) => {
-          const { lines: fitted, size } = fitLines(line, innerW, subSize);
-          return fitted.map((fl, fi) => (
-            <T key={`${line}-${index}-${fi}`} x={x + 12} y={y + 38 + index * 14 + fi * 13} fill={t.body} size={size}>
-              {fl}
-            </T>
-          ));
-        })}
-      </g>
+      <T x={x + 12} y={y + 22} fill={t.title} size={titleSize} className="diagram-hit__title">
+        {title}
+      </T>
+      {lines.flatMap((line, index) => {
+        const { lines: fitted, size } = fitLines(line, innerW, subSize);
+        return fitted.map((fl, fi) => (
+          <T key={`${line}-${index}-${fi}`} x={x + 12} y={y + 38 + index * 14 + fi * 13} fill={t.body} size={size}>
+            {fl}
+          </T>
+        ));
+      })}
     </g>
   );
 }

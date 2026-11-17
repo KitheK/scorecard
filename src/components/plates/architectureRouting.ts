@@ -1,10 +1,10 @@
 import type { ArchitectureNode } from "../../lib/schemas";
 import type { PlateMetrics } from "../../generators/architectureLayout";
-import { boxHeight } from "../../generators/architectureLayout";
+import { boxHeight, nodeBoxW } from "../../generators/architectureLayout";
 
 export function nodeRect(node: ArchitectureNode, m: PlateMetrics) {
   const h = boxHeight(node, m);
-  return { x: node.x ?? 0, y: node.y ?? 0, w: m.boxW, h };
+  return { x: node.x ?? 0, y: node.y ?? 0, w: nodeBoxW(node, m), h };
 }
 
 /** Orthogonal spine routing so lines run in column gutters, not through boxes. */
@@ -19,7 +19,8 @@ export function edgeRoute(
 
   let points: Array<[number, number]>;
 
-  if (dx > m.boxW * 0.35) {
+  const refW = Math.min(a.w, b.w);
+  if (dx > refW * 0.35) {
     const gutter = a.x + a.w + (b.x - (a.x + a.w)) / 2;
   const y1 = a.y + a.h / 2;
   const y2 = b.y + b.h / 2;
@@ -29,7 +30,7 @@ export function edgeRoute(
       [gutter, y2],
       [b.x, y2],
     ];
-  } else if (dx < -m.boxW * 0.35) {
+  } else if (dx < -refW * 0.35) {
     const gutter = b.x + b.w + (a.x - (b.x + b.w)) / 2;
     const y1 = a.y + a.h / 2;
     const y2 = b.y + b.h / 2;

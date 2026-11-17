@@ -20,7 +20,7 @@ type ComponentSpec = {
 const SCORECARD_COMPONENTS: ComponentSpec[] = [
   {
     id: "skill",
-    label: "Skill",
+    label: "Agent skill",
     path: "skills/scorecard/SKILL.md",
     group: "authoring",
     tone: "agent",
@@ -47,7 +47,7 @@ const SCORECARD_COMPONENTS: ComponentSpec[] = [
   },
   {
     id: "build",
-    label: "Build",
+    label: "Build output",
     path: "package.json",
     group: "delivery",
     tone: "runtime",
@@ -65,7 +65,7 @@ const SCORECARD_COMPONENTS: ComponentSpec[] = [
   },
   {
     id: "plates",
-    label: "Plates",
+    label: "Interactive plates",
     path: "src/components/plates/kit.tsx",
     group: "application",
     tone: "service",

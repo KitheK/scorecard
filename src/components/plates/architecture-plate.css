@@ -29,6 +29,59 @@
   box-sizing: border-box;
 }
 
+.arch-diagram-stack {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.arch-diagram-chrome {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem 0.75rem;
+  min-height: 1.75rem;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 0.1rem;
+}
+
+.arch-diagram-chrome__legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.85rem;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: var(--ink, #000);
+}
+
+.arch-diagram-chrome__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.arch-diagram-chrome__swatch {
+  display: inline-block;
+  width: 0.85rem;
+  height: 0.85rem;
+  border: 1.5px solid;
+  flex-shrink: 0;
+}
+
+.arch-diagram-chrome__tag {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--action, #103dff);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
 .arch-diagram-viewport {
   width: 100%;
 }
