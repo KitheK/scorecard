@@ -21,7 +21,7 @@ export function plateLayoutMetrics(nodeCount: number): PlateMetrics {
       boxH: 64,
       storeH: 76,
       colGap: 88,
-      rowGap: 16,
+      rowGap: 20,
       bandW: 26,
       marginX: 52,
       marginY: 44,
