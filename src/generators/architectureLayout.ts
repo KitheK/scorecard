@@ -102,13 +102,13 @@ export function metricsForCanvas(file: ArchitectureFile, canvasWidthPx: number):
   let m: PlateMetrics = { ...base, titleSize: 12, subSize: 11 };
   const target = Math.max(120, canvasWidthPx - 8);
 
-  for (let pass = 0; pass < 3; pass++) {
+  for (let pass = 0; pass < 5; pass++) {
     const laid = applyArchitectureLayout(file, m, { narrowStack: narrow });
     const vbParts = tightViewBox(laid.nodes, m).split(/\s+/).map(Number);
     const vbW = vbParts[2];
     const meet = target / Math.max(vbW, 1);
-    if (m.titleSize * meet >= 11.05) break;
-    const bumped = Math.min(26, Math.ceil(11.35 / Math.max(meet, 0.001)));
+    if (m.titleSize * meet >= 11.18) break;
+    const bumped = Math.min(26, Math.ceil(11.55 / Math.max(meet, 0.001)));
     m = { ...m, titleSize: bumped, subSize: Math.max(10, bumped - 1) };
   }
 

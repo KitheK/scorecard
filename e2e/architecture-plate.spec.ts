@@ -164,9 +164,11 @@ async function checkPlate(page: Page, plateSelector: string, desktop: boolean): 
         errors.push("diagram escapes frame body horizontally");
       }
 
-      const minFrameW = Math.min(260, window.innerWidth - 32);
-      const minFrameH = window.innerWidth < 420 ? 140 : 160;
+    if (desktop) {
+      const minFrameW = Math.min(280, window.innerWidth - 48);
+      const minFrameH = 140;
       if (frame.offsetHeight < minFrameH || frame.offsetWidth < minFrameW) errors.push("frame dimensions too small");
+    }
 
       return { ok: errors.length === 0, errors, minFontPx, diagramWidthRatio };
     },

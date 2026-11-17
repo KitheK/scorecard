@@ -1,8 +1,9 @@
 import { useSyncExternalStore } from "react";
+import type { Palette } from "./nouveau/core";
+import { NouveauFrame, type FrameVariant } from "./nouveau";
 import { useContent } from "../lib/ContentContext";
 import type { ArchitectureFile } from "../lib/schemas";
 import { Claim } from "./Claim";
-import { NouveauFrame, type FrameVariant } from "./nouveau";
 import { InteractiveArchitectureDiagram } from "./plates";
 import "./plates/architecture-plate.css";
 
@@ -27,6 +28,7 @@ function useNarrowPlate() {
 
 function frameVariant(raw: string): FrameVariant {
   if (raw === "pavot30" || raw === "lys33" || raw === "halo01" || raw === "coins46") return raw;
+  if (raw === "none") return "coins46";
   return "coins46";
 }
 
@@ -39,6 +41,7 @@ export function ArchitecturePlate({
   const { architecture: ctxArch, theme } = useContent();
   const architecture = architectureProp ?? ctxArch;
   const frame = frameVariant(theme.ornaments.plateFrame);
+  const palette: Palette = theme.ornaments.ornamentPalette === "plate" ? "plate" : "libretto";
   const narrow = useNarrowPlate();
   const figureId = architecture.figureId ?? "ARCH_001";
 
@@ -62,6 +65,7 @@ export function ArchitecturePlate({
         <NouveauFrame
           className="architecture-plate__nouveau"
           variant={frame}
+          palette={palette}
           animate={false}
           scale={narrow ? 0.82 : 1}
           gap={narrow ? 8 : 16}
