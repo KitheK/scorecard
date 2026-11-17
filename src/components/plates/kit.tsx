@@ -51,14 +51,22 @@ export function Diagram({
   children,
   viewBox = "0 0 720 400",
   className,
+  preserveAspectRatio = "xMidYMid meet",
 }: {
   label: string;
   children: ReactNode;
   viewBox?: string;
   className?: string;
+  preserveAspectRatio?: string;
 }) {
   return (
-    <svg viewBox={viewBox} role="img" aria-label={label} className={className ? `arch-diagram ${className}` : "arch-diagram"}>
+    <svg
+      viewBox={viewBox}
+      preserveAspectRatio={preserveAspectRatio}
+      role="img"
+      aria-label={label}
+      className={className ? `arch-diagram ${className}` : "arch-diagram"}
+    >
       <defs>
         <filter id="arch-select-glow" x="-35%" y="-35%" width="170%" height="170%" colorInterpolationFilters="sRGB">
           <feDropShadow dx="0" dy="0" stdDeviation="2.2" floodColor="#103DFF" floodOpacity="0.28" />
@@ -116,27 +124,52 @@ function hitHandlers(partId: string | undefined, onSelect: ((id: string) => void
   };
 }
 
-export function VBand({ x, y, h, name, tone = "edge" }: { x: number; y: number; h: number; name: string; tone?: ToneId }) {
+export function VBand({
+  x,
+  y,
+  h,
+  name,
+  tone = "edge",
+  size = 11,
+}: {
+  x: number;
+  y: number;
+  h: number;
+  name: string;
+  tone?: ToneId;
+  size?: number;
+}) {
   const t = tones[tone];
+  const label = name.length > 11 ? `${name.slice(0, 10)}…` : name;
   return (
     <g>
-      <rect x={x} y={y} width={22} height={h} rx={2} fill={t.fill} stroke={t.stroke} strokeWidth="1.25" />
+      <rect x={x} y={y} width={24} height={h} rx={2} fill={t.fill} stroke={t.stroke} strokeWidth="1.25" />
       <text
-        x={x + 11}
+        x={x + 12}
         y={y + h / 2}
         fill={t.title}
-        fontSize="10"
+        fontSize={size}
         textAnchor="middle"
         fontFamily={MONO}
-        transform={`rotate(-90 ${x + 11} ${y + h / 2})`}
+        transform={`rotate(-90 ${x + 12} ${y + h / 2})`}
       >
-        {name.length > 12 ? `${name.slice(0, 11)}…` : name}
+        {label}
       </text>
     </g>
   );
 }
 
-export function Legend({ x, y, items }: { x: number; y: number; items: Array<{ tone: ToneId; label: string }> }) {
+export function Legend({
+  x,
+  y,
+  items,
+  size = 11,
+}: {
+  x: number;
+  y: number;
+  items: Array<{ tone: ToneId; label: string }>;
+  size?: number;
+}) {
   return (
     <g>
       {items.map((item, index) => {
@@ -145,7 +178,7 @@ export function Legend({ x, y, items }: { x: number; y: number; items: Array<{ t
         return (
           <g key={item.tone + item.label}>
             <rect x={lx} y={y} width={14} height={14} fill={t.fill} stroke={t.stroke} strokeWidth="1.25" />
-            <T x={lx + 20} y={y + 11} fill={t.body} size={10}>
+            <T x={lx + 20} y={y + 11} fill={t.body} size={size}>
               {item.label}
             </T>
           </g>
@@ -166,6 +199,8 @@ export function Store({
   selected = false,
   onSelect,
   tone = "store",
+  titleSize = 12,
+  subSize = 11,
 }: {
   x: number;
   y: number;
@@ -174,6 +209,8 @@ export function Store({
   title: string;
   lines?: string[];
   tone?: ToneId;
+  titleSize?: number;
+  subSize?: number;
 } & HitProps) {
   const t = tones[tone];
   const ry = 9;
@@ -194,11 +231,11 @@ export function Store({
         strokeWidth={width}
       />
       <ellipse cx={x + w / 2} cy={y + ry} rx={w / 2} ry={ry} fill={t.fill} stroke={stroke} strokeWidth={width} />
-      <T x={x + 14} y={y + 32} fill={t.title}>
+      <T x={x + 14} y={y + 32} fill={t.title} size={titleSize}>
         {title.length > 16 ? `${title.slice(0, 15)}…` : title}
       </T>
       {lines.flatMap((line, index) => {
-        const { lines: fitted, size } = fitLines(line, innerW, 10);
+        const { lines: fitted, size } = fitLines(line, innerW, subSize);
         return fitted.map((fl, fi) => (
           <T key={`${line}-${index}-${fi}`} x={x + 14} y={y + 50 + index * 16 + fi * 14} fill={t.body} size={size}>
             {fl}
@@ -220,6 +257,8 @@ export function Box({
   selected = false,
   onSelect,
   tone = "paper",
+  titleSize = 12,
+  subSize = 11,
 }: {
   x: number;
   y: number;
@@ -228,6 +267,8 @@ export function Box({
   title: string;
   lines?: string[];
   tone?: ToneId;
+  titleSize?: number;
+  subSize?: number;
 } & HitProps) {
   const t = tones[tone];
   const stroke = selected ? BLUE : t.stroke;
@@ -240,11 +281,11 @@ export function Box({
       {...hitHandlers(partId, onSelect)}
     >
       <rect x={x} y={y} width={w} height={h} fill={t.fill} stroke={stroke} strokeWidth={selected ? 2 : 1.75} />
-      <T x={x + 12} y={y + 20} fill={t.title}>
+      <T x={x + 12} y={y + 22} fill={t.title} size={titleSize}>
         {titleShort}
       </T>
       {lines.flatMap((line, index) => {
-        const { lines: fitted, size } = fitLines(line, innerW, line.startsWith("(") ? 10 : 11);
+        const { lines: fitted, size } = fitLines(line, innerW, subSize);
         return fitted.map((fl, fi) => (
           <T key={`${line}-${index}-${fi}`} x={x + 12} y={y + 38 + index * 14 + fi * 13} fill={t.body} size={size}>
             {fl}
@@ -266,6 +307,7 @@ export function Flow({
   label,
   labelAt,
   animate = true,
+  labelSize = 11,
 }: {
   points: Array<[number, number]>;
   dashed?: boolean;
@@ -277,6 +319,7 @@ export function Flow({
   label?: string;
   labelAt?: [number, number];
   animate?: boolean;
+  labelSize?: number;
 }) {
   const d = points.map((point, index) => `${index === 0 ? "M" : "L"}${point[0]} ${point[1]}`).join(" ");
   const uid = points.map((p) => p.join("-")).join("_");
@@ -318,7 +361,7 @@ export function Flow({
           x={labelAt[0]}
           y={labelAt[1]}
           fill={color}
-          fontSize="9"
+          fontSize={labelSize}
           fontFamily={MONO}
           opacity="0.9"
           stroke={PAPER}

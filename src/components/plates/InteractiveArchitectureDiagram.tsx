@@ -17,7 +17,6 @@ function reducedMotion(): boolean {
 
 export type InteractiveArchitectureDiagramProps = {
   file: ArchitectureFile;
-  /** Compact layout for home hero (smaller rail gap). */
   compact?: boolean;
   defaultNodeId?: string | null;
   showTopology?: boolean;
@@ -27,17 +26,14 @@ export function InteractiveArchitectureDiagram({
   file,
   compact,
   defaultNodeId,
-  showTopology = true,
+  showTopology = false,
 }: InteractiveArchitectureDiagramProps) {
   const motionReduced = useSyncExternalStore(subscribeReducedMotion, reducedMotion, () => false);
   const defaultPart = defaultNodeId ?? file.nodes[0]?.id ?? null;
 
   return (
     <div className={compact ? "interactive-architecture interactive-architecture--compact" : "interactive-architecture"}>
-      <InteractivePlate
-        defaultPart={defaultPart}
-        renderRail={(partId) => <DetailRail file={file} partId={partId} />}
-      >
+      <InteractivePlate defaultPart={defaultPart} renderRail={(partId) => <DetailRail file={file} partId={partId} />}>
         {({ pick, selected }) => (
           <ArchitectureDiagramSvg file={file} pick={pick} selected={selected} animateEdges={!motionReduced} />
         )}

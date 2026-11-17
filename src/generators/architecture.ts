@@ -41,6 +41,14 @@ function mermaidFromGraph(
   ].join("\n");
 }
 
+function stripHtml(text: string): string {
+  return text
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<[^>]+>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 /** Build architecture.json; drop nodes whose paths do not exist. */
 export function buildArchitecture(input: GraphInput): ArchitectureFile {
   const root = input.root ?? process.cwd();
@@ -58,7 +66,12 @@ export function buildArchitecture(input: GraphInput): ArchitectureFile {
     figureId: input.figureId ?? "ARCH_001",
     layout: input.layout ?? "spine-lr",
     overview: input.overview
-      ? { text: input.overview, provenance: "inferred", source: "generated", evidence: "repo-scan" }
+      ? {
+          text: stripHtml(input.overview),
+          provenance: "inferred",
+          source: "generated",
+          evidence: "repo-scan",
+        }
       : undefined,
     nodes,
     edges,
@@ -71,4 +84,4 @@ export function buildArchitecture(input: GraphInput): ArchitectureFile {
 }
 
 export { applyArchitectureLayout, inferGroupsFromNodes } from "./architectureLayout";
-export { scanArchitectureGraph } from "./architectureScan";
+export { scanArchitectureGraph, MAX_ARCHITECTURE_NODES, MIN_ARCHITECTURE_NODES } from "./architectureScan";

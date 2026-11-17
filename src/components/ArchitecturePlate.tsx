@@ -40,8 +40,12 @@ export function ArchitecturePlate({
   return (
     <figure className="architecture-plate plate">
       <p className="architecture-plate__label mono">{figureId}</p>
-      <NouveauFrame variant={frame} animate={theme.ornaments.footAnimate} scale={compact ? 0.85 : 1}>
-        {showOverview && architecture.overview ? <Claim claim={architecture.overview} /> : null}
+      {showOverview && architecture.overview ? (
+        <div className="architecture-plate__overview">
+          <Claim claim={architecture.overview} />
+        </div>
+      ) : null}
+      <NouveauFrame variant={frame} animate={theme.ornaments.footAnimate} scale={compact ? 0.9 : 1} gap={12}>
         <InteractiveArchitectureDiagram file={architecture} compact={compact} showTopology={showTopology} />
       </NouveauFrame>
     </figure>

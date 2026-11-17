@@ -1,23 +1,44 @@
+.arch-diagram-viewport {
+  width: 100%;
+  aspect-ratio: 2.15 / 1;
+  min-height: clamp(280px, 34vw, 400px);
+  max-height: 420px;
+}
+
 .arch-diagram {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+}
+
+.interactive-architecture {
+  width: 100%;
 }
 
 .interactive-plate {
   display: grid;
-  gap: 0.85rem;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 30%);
+  gap: 0.75rem 1.25rem;
+  align-items: start;
+}
+
+.interactive-plate__canvas {
+  min-width: 0;
 }
 
 .interactive-architecture--compact .interactive-plate {
-  gap: 0.55rem;
+  grid-template-columns: minmax(0, 1fr) minmax(200px, 34%);
+  gap: 0.5rem 1rem;
 }
 
 .detail-rail {
-  border-top: 1px dashed var(--rule, #d0d0d0);
-  padding: 0.85rem 0.35rem 0.5rem;
-  max-width: 48rem;
+  border-top: none;
+  border-left: 1px dashed var(--rule, #d0d0d0);
+  padding: 0.35rem 0 0.5rem 1rem;
+  margin: 0;
+  max-width: none;
   width: 100%;
+  align-self: stretch;
 }
 
 .detail-hint,
@@ -99,6 +120,10 @@
   outline: none;
 }
 
+.diagram-flow {
+  pointer-events: none;
+}
+
 .flow-track {
   animation: flow-dash 1.35s linear infinite;
 }
@@ -129,7 +154,8 @@
 }
 
 .topology-panel {
-  margin-top: 0.5rem;
+  margin-top: 0.65rem;
+  grid-column: 1 / -1;
 }
 
 .topology-panel summary {
@@ -152,6 +178,27 @@
   letter-spacing: 0.06em;
   color: var(--action);
   margin: 0 0 0.35rem;
+}
+
+.architecture-plate__overview {
+  margin: 0 0 0.75rem;
+  max-width: 48rem;
+}
+
+.architecture-plate .nv-frame__body {
+  overflow: visible;
+}
+
+@media (max-width: 820px) {
+  .interactive-plate {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-rail {
+    border-left: none;
+    border-top: 1px dashed var(--rule, #d0d0d0);
+    padding: 0.85rem 0.35rem 0.5rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

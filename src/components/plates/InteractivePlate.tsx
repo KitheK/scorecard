@@ -1,7 +1,6 @@
 import { useState, type ReactNode } from "react";
 
 export function InteractivePlate({
-  hint,
   defaultPart,
   children,
   renderRail,
@@ -23,9 +22,9 @@ export function InteractivePlate({
 
   return (
     <div className="interactive-plate">
-      {children({ partId, pick, selected })}
-      {footer}
+      <div className="interactive-plate__canvas">{children({ partId, pick, selected })}</div>
       {renderRail?.(partId)}
+      {footer}
     </div>
   );
 }

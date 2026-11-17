@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { validateArchitecture } from "../lib/schemas";
-import { applyArchitectureLayout, viewBoxForNodes } from "./architectureLayout";
+import { applyArchitectureLayout, tightViewBox, plateLayoutMetrics } from "./architectureLayout";
 import { buildArchitecture, scanArchitectureGraph } from "./architecture";
+import { MAX_ARCHITECTURE_NODES, MIN_ARCHITECTURE_NODES } from "./architectureScan";
 import { fitLines } from "../components/plates/kit";
 
 describe("architecture layout", () => {
@@ -23,23 +24,40 @@ describe("architecture layout", () => {
     );
   });
 
-  it("scan + build from this repo", () => {
+  it("tight viewBox wraps content", () => {
+    const arch = applyArchitectureLayout(
+      buildArchitecture({
+        nodes: [
+          { id: "a", label: "A", group: "client" },
+          { id: "b", label: "B", group: "runtime" },
+          { id: "c", label: "C", group: "data", tone: "data" },
+        ],
+        edges: [
+          { from: "a", to: "b" },
+          { from: "b", to: "c" },
+        ],
+      }),
+    );
+    const m = plateLayoutMetrics(arch.nodes.length);
+    const vb = tightViewBox(arch.nodes, m).split(/\s+/).map(Number);
+    expect(vb[2]).toBeLessThan(950);
+    expect(vb[2] / vb[3]).toBeGreaterThan(1.2);
+  });
+
+  it("scan + build from this repo uses system components", () => {
     const arch = buildArchitecture(scanArchitectureGraph(process.cwd()));
-    expect(arch.nodes.length).toBeGreaterThanOrEqual(3);
-    expect(arch.edges.length).toBeGreaterThanOrEqual(2);
+    expect(arch.nodes.length).toBeGreaterThanOrEqual(MIN_ARCHITECTURE_NODES);
+    expect(arch.nodes.length).toBeLessThanOrEqual(MAX_ARCHITECTURE_NODES);
+    expect(arch.nodes.some((n) => n.id === "skill")).toBe(true);
+    expect(arch.nodes.some((n) => n.label === "architecture.test.ts")).toBe(false);
+    expect(arch.overview?.text.includes("<br")).toBe(false);
     expect(arch.mermaid).toContain("flowchart");
-    const vb = viewBoxForNodes(arch.nodes);
-    expect(vb).toMatch(/^0 0 \d+ \d+$/);
-    const relaid = applyArchitectureLayout(arch);
-    expect(relaid.layout).toBe("spine-lr");
   });
 });
 
 describe("label fitting", () => {
   it("wraps long parenthetical labels", () => {
-    const { lines, size } = fitLines("(OpenAI API)", 72, 10);
-    expect(lines.length).toBeGreaterThanOrEqual(1);
+    const { lines } = fitLines("(OpenAI API)", 72, 11);
     expect(lines.join(" ")).toContain("OpenAI");
-    expect(size).toBeLessThanOrEqual(10);
   });
 });

@@ -3,67 +3,63 @@
   "figureId": "ARCH_001",
   "layout": "spine-lr",
   "overview": {
-    "text": "What was built, what works, what doesn’t, and how to run it, readable in about two minutes.<br>",
+    "text": "Descriptive project manuals for any codebase.",
     "provenance": "inferred",
     "source": "generated",
     "evidence": "repo-scan"
   },
   "nodes": [
     {
-      "id": "pkg",
-      "label": "Package",
-      "path": "package.json",
-      "group": "tooling",
-      "tone": "runtime",
+      "id": "skill",
+      "label": "Agent skill",
+      "path": "skills/scorecard/SKILL.md",
+      "group": "authoring",
+      "tone": "agent",
       "detail": {
-        "role": "Package",
-        "evidence": "package.json",
-        "summary": "Evidence path: package.json"
+        "role": "Interview, scan, and content workflow",
+        "evidence": "skills/scorecard/SKILL.md"
       },
-      "x": 64,
-      "y": 56
-    },
-    {
-      "id": "app",
-      "label": "App shell",
-      "path": "src/App.tsx",
-      "group": "client",
-      "tone": "client",
-      "detail": {
-        "role": "App shell",
-        "evidence": "src/App.tsx",
-        "summary": "Evidence path: src/App.tsx"
-      },
-      "x": 232,
-      "y": 56
+      "x": 82,
+      "y": 154
     },
     {
       "id": "cli",
       "label": "CLI",
       "path": "bin/scorecard.js",
-      "group": "tooling",
+      "group": "delivery",
       "tone": "runtime",
       "detail": {
-        "role": "CLI",
-        "evidence": "bin/scorecard.js",
-        "summary": "Evidence path: bin/scorecard.js"
+        "role": "dev, build, check commands",
+        "evidence": "bin/scorecard.js"
       },
-      "x": 64,
-      "y": 118
+      "x": 294,
+      "y": 82
     },
     {
-      "id": "skill",
-      "label": "Agent skill",
-      "path": "skills/scorecard/SKILL.md",
-      "group": "authoring",
-      "tone": "service",
+      "id": "dev-server",
+      "label": "Vite dev",
+      "path": "vite.config.ts",
+      "group": "delivery",
+      "tone": "edge",
       "detail": {
-        "role": "Agent skill",
-        "evidence": "skills/scorecard/SKILL.md",
-        "summary": "Evidence path: skills/scorecard/SKILL.md"
+        "role": "Local dev server and Write saves",
+        "evidence": "vite.config.ts · vite-plugin-scorecard-save.ts"
       },
-      "x": 400,
-      "y": 56
+      "x": 294,
+      "y": 154
+    },
+    {
+      "id": "renderer",
+      "label": "Guide renderer",
+      "path": "src/App.tsx",
+      "group": "application",
+      "tone": "client",
+      "detail": {
+        "role": "React manual and scorecard pages",
+        "evidence": "src/App.tsx"
+      },
+      "x": 506,
+      "y": 46
     },
     {
       "id": "content",
@@ -72,68 +68,64 @@
       "group": "data",
       "tone": "data",
       "detail": {
-        "role": "Content JSON",
-        "evidence": "content/manual.json",
-        "summary": "Evidence path: content/manual.json"
+        "role": "Authoritative content bundle",
+        "evidence": "content/*.json"
       },
-      "x": 568,
-      "y": 56
-    },
-    {
-      "id": "vite",
-      "label": "Vite config",
-      "path": "vite.config.ts",
-      "group": "tooling",
-      "tone": "runtime",
-      "detail": {
-        "role": "Vite config",
-        "evidence": "vite.config.ts",
-        "summary": "Evidence path: vite.config.ts"
-      },
-      "x": 64,
-      "y": 180
+      "x": 718,
+      "y": 148
     },
     {
       "id": "generators",
       "label": "Generators",
       "path": "src/generators/architecture.ts",
-      "group": "generators",
+      "group": "application",
       "tone": "service",
       "detail": {
-        "role": "Generators",
-        "evidence": "src/generators/architecture.ts",
-        "summary": "Evidence path: src/generators/architecture.ts"
+        "role": "Architecture and timeline builders",
+        "evidence": "src/generators/"
       },
-      "x": 736,
-      "y": 56
-    },
-    {
-      "id": "README_md",
-      "label": "README.md",
-      "path": "README.md",
-      "group": "repo",
-      "tone": "service",
-      "detail": {
-        "role": "README.md",
-        "evidence": "README.md",
-        "summary": "Evidence path: README.md"
-      },
-      "x": 904,
-      "y": 56
-    },
-    {
-      "id": "src_main_tsx",
-      "label": "src/main.tsx",
-      "path": "src/main.tsx",
-      "group": "repo",
-      "tone": "service",
-      "detail": {
-        "role": "src/main.tsx",
-        "evidence": "src/main.tsx",
-        "summary": "Evidence path: src/main.tsx"
-      },
-      "x": 904,
+      "x": 506,
       "y": 118
+    },
+    {
+      "id": "plates",
+      "label": "Interactive plates",
+      "path": "src/components/plates/kit.tsx",
+      "group": "application",
+      "tone": "service",
+      "detail": {
+        "role": "SVG architecture figures in NouveauFrame",
+        "evidence": "src/components/plates/"
+      },
+      "x": 506,
+      "y": 190
+    },
+    {
+      "id": "schemas",
+      "label": "Contracts",
+      "path": "src/lib/schemas.ts",
+      "group": "application",
+      "tone": "service",
+      "detail": {
+        "role": "JSON schema types and validation",
+        "evidence": "src/lib/schemas.ts"
+      },
+      "x": 506,
+      "y": 262
+    },
+    {
+      "id": "build",
+      "label": "Build output",
+      "path": "package.json",
+      "group": "delivery",
+      "tone": "runtime",
+      "detail": {
+        "role": "Production bundle to dist/",
+        "evidence": "dist/index.html · npm run build",
+        "summary": "Vite build; optional dist/ after build"
+      },
+      "x": 294,
+      "y": 226
     }
   ],
   "edges": [
@@ -143,57 +135,77 @@
       "label": "fills"
     },
     {
-      "from": "content",
-      "to": "app",
-      "label": "drives"
+      "from": "skill",
+      "to": "generators",
+      "label": "invokes"
+    },
+    {
+      "from": "generators",
+      "to": "content",
+      "label": "writes"
     },
     {
       "from": "cli",
-      "to": "app",
+      "to": "dev-server",
       "label": "serves"
     },
     {
-      "from": "pkg",
-      "to": "app",
-      "label": "scripts"
+      "from": "dev-server",
+      "to": "renderer",
+      "label": "hosts"
     },
     {
-      "from": "skill",
-      "to": "pkg",
-      "label": "documents"
+      "from": "content",
+      "to": "renderer",
+      "label": "drives"
+    },
+    {
+      "from": "generators",
+      "to": "plates",
+      "label": "layout"
+    },
+    {
+      "from": "plates",
+      "to": "renderer",
+      "label": "embeds"
+    },
+    {
+      "from": "schemas",
+      "to": "content",
+      "label": "validates"
+    },
+    {
+      "from": "cli",
+      "to": "build",
+      "label": "builds"
+    },
+    {
+      "from": "dev-server",
+      "to": "build",
+      "label": "bundles"
     }
   ],
   "groups": [
     {
-      "id": "tooling",
-      "title": "Tooling",
+      "id": "authoring",
+      "title": "Authoring",
+      "tone": "agent"
+    },
+    {
+      "id": "delivery",
+      "title": "Delivery",
       "tone": "runtime"
     },
     {
-      "id": "client",
-      "title": "Client",
+      "id": "application",
+      "title": "Application",
       "tone": "client"
-    },
-    {
-      "id": "authoring",
-      "title": "Authoring",
-      "tone": "service"
     },
     {
       "id": "data",
       "title": "Data",
       "tone": "data"
-    },
-    {
-      "id": "generators",
-      "title": "Generators",
-      "tone": "service"
-    },
-    {
-      "id": "repo",
-      "title": "Repo",
-      "tone": "service"
     }
   ],
-  "mermaid": "flowchart LR\n  pkg[\"Package\"]\n  app[\"App shell\"]\n  cli[\"CLI\"]\n  skill[\"Agent skill\"]\n  content[\"Content JSON\"]\n  vite[\"Vite config\"]\n  generators[\"Generators\"]\n  README_md[\"README.md\"]\n  src_main_tsx[\"src/main.tsx\"]\n  skill -->|fills| content\n  content -->|drives| app\n  cli -->|serves| app\n  pkg -->|scripts| app\n  skill -->|documents| pkg"
+  "mermaid": "flowchart LR\n  skill[\"Agent skill\"]\n  cli[\"CLI\"]\n  dev-server[\"Vite dev\"]\n  renderer[\"Guide renderer\"]\n  content[\"Content JSON\"]\n  generators[\"Generators\"]\n  plates[\"Interactive plates\"]\n  schemas[\"Contracts\"]\n  build[\"Build output\"]\n  skill -->|fills| content\n  skill -->|invokes| generators\n  generators -->|writes| content\n  cli -->|serves| dev-server\n  dev-server -->|hosts| renderer\n  content -->|drives| renderer\n  generators -->|layout| plates\n  plates -->|embeds| renderer\n  schemas -->|validates| content\n  cli -->|builds| build\n  dev-server -->|bundles| build"
 }

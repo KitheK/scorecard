@@ -15,9 +15,10 @@
       "group": "client",
       "path": "package.json",
       "tone": "client",
-      "x": 64,
-      "y": 56,
-      "detail": { "role": "Browser UI", "evidence": "package.json" }
+      "detail": {
+        "role": "Browser UI",
+        "evidence": "src/ or package.json scripts"
+      }
     },
     {
       "id": "api",
@@ -25,18 +26,21 @@
       "group": "runtime",
       "path": "package.json",
       "tone": "service",
-      "x": 232,
-      "y": 56,
-      "detail": { "role": "HTTP handlers", "evidence": "package.json", "ports": ["3000"] }
+      "detail": {
+        "role": "HTTP handlers",
+        "evidence": "package.json",
+        "ports": ["3000"]
+      }
     },
     {
       "id": "db",
       "label": "Database",
       "group": "data",
       "tone": "data",
-      "x": 400,
-      "y": 56,
-      "detail": { "role": "Persistence", "summary": "Inferred from project README or ORM config." }
+      "detail": {
+        "role": "Persistence",
+        "summary": "Inferred from project README or ORM config."
+      }
     }
   ],
   "edges": [
