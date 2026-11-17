@@ -6,6 +6,7 @@ import { ContentsPage } from "./pages/ContentsPage";
 import { ExportPage } from "./pages/ExportPage";
 import { DemoPackPage, DemosIndexPage } from "./pages/DemosPage";
 import { ScorecardPage } from "./pages/ScorecardPage";
+import { InterviewPage } from "./interview/InterviewPage";
 import { WritePage } from "./write/WritePage";
 import { OrnamentSmokePage } from "./pages/OrnamentSmokePage";
 
@@ -21,6 +22,7 @@ export function App() {
             <Route path="/contents" element={<ContentsPage />} />
             <Route path="/chapters/:slug" element={<ChapterPage />} />
             <Route path="/export" element={<ExportPage />} />
+            {import.meta.env.DEV ? <Route path="/interview" element={<InterviewPage />} /> : null}
             {import.meta.env.DEV ? <Route path="/write/*" element={<WritePage />} /> : null}
             {import.meta.env.DEV ? <Route path="/dev/ornaments" element={<OrnamentSmokePage />} /> : null}
             <Route path="*" element={<Navigate to="/" replace />} />

@@ -18,6 +18,7 @@ function LiteLayout() {
           </NavLink>
           <NavLink to="/demos">Demos</NavLink>
           <NavLink to="/export">Export</NavLink>
+          {import.meta.env.DEV ? <NavLink to="/interview">Interview</NavLink> : null}
           {import.meta.env.DEV ? <NavLink to="/write">Write</NavLink> : null}
         </nav>
         <span className="mono">{theme.scheme}</span>

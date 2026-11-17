@@ -1,34 +1,73 @@
 # Scorecard interview
 
+The author answers on **127.0.0.1** in the local web form (`/interview`), not in chat. Your job is infer-first: pre-fill `content/interview.json` from the repo, then let the form confirm or correct.
+
+## Launch order
+
+1. If `content/interview.json` has empty `answers`, run `npx scorecard-kit dev` — it opens `/interview`.
+2. After the author clicks **Done**, read `content/interview-handoff.json` (or `buildInterviewHandoff(interview)`).
+3. Bounded repo scan (`references/analysis.md`) — still required; handoff answers are **hints**, not gospel.
+4. Continue stages B–E in the skill using confirmed keys only; everything else stays `draft` / `inferred` until Write → Review.
+
 ## Principles
 
-Infer first. Multiple choice + free text. Skip → draft/inferred. Batches of 3–5. Depth: Quick (A, B1–B3, E) · Standard (+ rest of B + C) · Deep (+ D).
+- **Infer first, ask second** — seed `profile` and `answers` with `provenance: "inferred"` + `evidence` (path or observation) when you can.
+- **Never** set `provenance: "confirmed"` yourself — only the form (or Write → Review) may confirm.
+- **Depth** comes from the form (`quick` · `standard` · `deep`); respect it when choosing how many chapters to propose.
+- **`profile.projectName`** drives §4.2 naming: generated `manual.title` must be `"${projectName} Guide"`.
+- Skip is valid — empty answers are omitted from handoff.
 
-Save answers to `content/interview.json`.
+## Stages (form copy mirrors this)
 
-## Stage A — Profile
+### Stage A — Profile
 
-- A1 kind: personal · coursework · hackathon · team · work · oss · research · other
-- A2 builders: solo · small team · larger · solo-in-team
-- A3 purpose: submission · portfolio · handoff · demo · personal · stakeholder
-- A4 reader goal: understand · run · maintain · judge · fund
-- A5 scale: day · weekend-week · weeks · months+
-- A6 depth: quick · standard · deep
+Warm profiling, not a checklist. Capture **project name** for the guide title.
 
-## Stage B — Core
+- **A1** kind · **A2** builders · **A3** purpose · **A4** reader goal · **A5** scale · **A6** depth (quick / standard / deep)
 
-B1 job sentence · B2 brief/success · B3 honest status · B4 built vs borrowed · B5 hardest problem · B6 defend vs abandon · B7 next · B8 proof · B9 redaction/public
+### Stage B — Core story
 
-## Stage C — Adaptive
+- **B1** one-sentence job · **B2** success · **B3** honest status  
+- Standard+: **B4** built vs borrowed · **B5–B9** hardest problem, defend/abandon, next, proof, redaction
 
-Pick module from A1/A2 (personal, coursework, hackathon, team, work, oss, research) — full question lists live in the project plan.
+### Stage C — Adaptive context (standard+)
 
-## Stage D — Technical (evidence only)
+Free-text: hook, audience, constraints, collaboration — tie prose to A1/A3.
 
-Propose building blocks, flow, dependencies, failure modes, decision candidates, timeline form.
+### Stage D — Technical evidence (deep only)
 
-## Stage E — Look
+Entrypoints, flow, dependencies, failure modes, decision candidates — point at paths; you verify.
 
-Propose defaults from A3. Show named choices with specimen links (`public/previews/…` or `npx scorecard-kit look`).
+### Stage E — Look
 
-- E1 tone · E2 scheme · E3 display face · E4 ornaments · E5 ornament colour · E6 no preference
+- **E_tone** · **E_scheme** · optional display / frames · **E_noPreference** to defer  
+- Specimens: `npx scorecard-kit look` and `public/previews/`
+
+### Closing narrative (optional)
+
+`narrative.hook`, `narrative.proudMoment` — colour for the manual lede, not required.
+
+## Agent handoff consumption
+
+```ts
+import handoff from "../content/interview-handoff.json";
+// or buildInterviewHandoff(interview)
+```
+
+Read order:
+
+1. `profile` — especially `projectName`, `purpose`, `readerGoal`
+2. `answers` — only `confirmed` entries; cross-check repo
+3. `narrative` — optional tone for summary / home (Full)
+4. `agentNotes` — if present on full `interview.json`, included in handoff
+
+Then: scan → size (Lite/Standard/Full) → fill `content/*.json` → `npx scorecard-kit check` → hand off Write mode.
+
+## Persistence
+
+| File | Purpose |
+|------|---------|
+| `content/interview.json` | Full form state |
+| `content/interview-handoff.json` | Slim export on **Done** |
+
+Local trust model (§5.7): no auth on loopback; redact secrets before writing any JSON.

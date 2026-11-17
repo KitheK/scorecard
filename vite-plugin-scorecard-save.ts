@@ -10,6 +10,7 @@ const ALLOWED = new Set([
   "requirements.json",
   "team.json",
   "interview.json",
+  "interview-handoff.json",
   "manual.json",
   "stack.json",
   "apis.json",
