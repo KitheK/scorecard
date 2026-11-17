@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "scheme": "libretto",
   "tone": "manual",
+  "fontPackId": "libretto-default",
   "tokens": {
     "canvas": "#fbfbfb",
     "ink": "#000000",

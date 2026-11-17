@@ -2,3 +2,4 @@ node_modules
 dist
 EXPORT-README-SNIPPET.md
 .DS_Store
+__pycache__/

@@ -250,14 +250,77 @@ a {
 
 .look-grid button,
 .write-side button,
-.write-side select {
+.write-side select,
+.interview-choice,
+.interview-btn {
   font: inherit;
   padding: 0.4rem 0.55rem;
   border: 1px solid var(--rule);
   background: var(--canvas);
   cursor: pointer;
+  border-radius: 0.4rem;
 }
 
+.font-role-picker {
+  grid-column: 1 / -1;
+  border-top: 1px dashed var(--rule);
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+}
+.font-role-section {
+  margin-bottom: 1rem;
+}
+.font-role-section h3 {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.35rem;
+}
+.font-role-sub {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0 0 0.5rem;
+}
+.font-role-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+.font-role-opt {
+  font-size: 0.75rem;
+}
+.font-role-sample {
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--rule);
+  background: var(--canvas);
+}
+.font-role-sample--display {
+  font-family: var(--preview-display, var(--font-display));
+  font-size: 1.5rem;
+}
+.font-role-sample--body {
+  font-family: var(--preview-body, var(--font-body));
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.font-role-sample--ui {
+  font-family: var(--preview-ui, var(--font-ui));
+  font-size: 0.85rem;
+}
+.font-role-sample--mono {
+  font-family: var(--preview-mono, var(--font-mono));
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+}
+.font-role-reset {
+  margin-top: 0.5rem;
+}
+.font-role-json pre {
+  font-size: 0.7rem;
+  overflow: auto;
+}
 .look-grid button[aria-pressed="true"] {
   border-color: var(--action);
   color: var(--action);

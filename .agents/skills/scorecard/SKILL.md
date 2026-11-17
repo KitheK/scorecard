@@ -11,7 +11,7 @@ description: >
 
 # Scorecard
 
-Descriptive project manuals only. Never grade. Never invent metrics or contributions. Never set `provenance: confirmed` (only the author via Write mode).
+Descriptive project manuals only. Never grade. Never invent metrics or contributions. Never set `provenance: confirmed` (only the author via the local **interview form** or Write → Review).
 
 ## Hard rules
 
@@ -25,12 +25,13 @@ Descriptive project manuals only. Never grade. Never invent metrics or contribut
 
 ## Ordered workflow
 
-1. Stage A (profile) — see `interview.md`
-2. Bounded repo scan — see `references/analysis.md`
-3. Stages B–D at chosen depth
-4. Stage E look & feel — link specimens / `npx scorecard-kit look`; or E6 defaults
-5. Propose size Lite|Standard|Full; apply module gates from `references/project-profiles.md`
-6. **Scaffold the kit** into the target project (no host monorepo required):
+1. **Infer-first seed** — write `content/interview.json` (`profile` + `inferred` answers with `evidence` where you can). Do not chat-interview unless the form is unreachable.
+2. **Author interview** — `npx scorecard-kit dev` opens `/interview` when `answers` are empty; otherwise Write mode. After **Done**, read `content/interview-handoff.json` (see `interview.md`).
+3. Bounded repo scan — see `references/analysis.md`; **must** run architecture generator (see `references/analysis.md` § Architecture)
+4. Generate at chosen **depth** using handoff + scan — stages B–E in `interview.md`
+5. Stage E look & feel — link specimens / `npx scorecard-kit look`; or defer via `E_noPreference`
+6. Propose size Lite|Standard|Full; apply module gates from `references/project-profiles.md`
+7. **Scaffold the kit** into the target project (no host monorepo required):
    ```bash
    git clone --depth 1 https://github.com/KitheK/scorecard.git /tmp/scorecard-kit
    cp -R /tmp/scorecard-kit ./scorecard
@@ -39,9 +40,9 @@ Descriptive project manuals only. Never grade. Never invent metrics or contribut
    Windows: clone to `$env:TEMP\scorecard-kit`, then `Copy-Item -Recurse` into `.\scorecard`.
    If `./scorecard` already exists, reuse it — do not wipe `authored` content.
    Write `theme.json` from Stage E / `references/theme-presets.md`.
-7. Fill `scorecard/content/*.json` with provenance tags (`confirmed` only later via Write → Review).
-8. Redaction pass + `npx scorecard-kit check`
-9. Hand off: `cd scorecard && npx scorecard-kit dev` → Write mode. Point the author at `/demos` for specimen repo shapes if helpful.
+8. Fill `scorecard/content/*.json` with provenance tags (`confirmed` only via interview form or Write → Review). Set `manual.projectName` + `manual.title` (`"<Project> Guide"`) from handoff. Before writing `architecture.json`, call `scanArchitectureGraph` + `buildArchitecture` from `src/generators/architecture.ts` (≥3 nodes, ≥2 edges, every node has `detail` and valid `path`); set `figureId` `ARCH_001` and add a manual `figure` or `architecture` block referencing it on Standard/Full.
+9. Redaction pass + `npx scorecard-kit check`
+10. Hand off: `cd scorecard && npx scorecard-kit dev` → Write mode after interview complete. Point the author at `/demos` for specimen repo shapes if helpful.
 
 ## Dogfood specimens (in the kit)
 

@@ -16,6 +16,14 @@ Read-only and bounded: tree, README, manifests, config, tests, CI, licence, samp
 
 ## Architecture
 
+**Mandatory on Standard/Full.** Agents must not ship empty `architecture.nodes`.
+
+1. Import from the kit: `scanArchitectureGraph(root)` then `buildArchitecture({ ...scan, nodes: [...] })` (`src/generators/architecture.ts`).
+2. Every node needs a **real repo path** (drop if missing), `detail.role`, and `detail.evidence`.
+3. Output must pass `validateArchitecture(file, exists, { minNodes: 3, minEdges: 2, requireInteractiveFields: true })`.
+4. UI renders **interactive SVG** inside `NouveauFrame`; `mermaid` is export/print only — still include it in JSON.
+5. Optional: `npx vite-node src/scripts/generate-architecture.ts` when authoring inside the kit repo.
+
 Validate every node path. Drop invalid. No runtime gitdiagram.com dependency.
 
 ## Redaction

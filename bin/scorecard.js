@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { createServer } from "node:net";
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -14,13 +14,15 @@ Usage (inside the kit folder):
   npx scorecard-kit <command>      or      node bin/scorecard.js <command>
 
 Commands:
-  dev       Install if needed, start Write mode, open browser
+  dev       Install if needed; open interview when answers empty, else Write mode
+  interview Start dev server on /interview (local authoring)
   demos     Start the kit and open in-app dogfood demos
   build     Production static build (no Write/save)
   export    Print instructions + README badge snippet
   refresh   Reminder: re-scan via skill; open /write review
   check     Validate content JSON + provenance + paths
   look      Open look-gallery.html specimen page
+  fonts     Font pack utilities (trace, list)
   help      Show this message
 `);
 }
@@ -111,8 +113,43 @@ async function startServer(path, label) {
   }
 }
 
+function normalizeAnswerValue(raw) {
+  if (raw && typeof raw === "object" && raw !== null && "value" in raw) return raw.value;
+  return raw;
+}
+
+function interviewNeedsForm(data) {
+  const keys = Object.keys(data?.answers ?? {});
+  if (keys.length === 0) return true;
+  return !keys.some((k) => {
+    const v = normalizeAnswerValue(data.answers[k]);
+    if (v === null || v === undefined) return false;
+    if (typeof v === "string" && !v.trim()) return false;
+    return true;
+  });
+}
+
+function resolveInterviewPath() {
+  const interviewPath = join(root, "content", "interview.json");
+  if (!existsSync(interviewPath)) return { path: "/interview", label: "Scorecard interview" };
+  try {
+    const data = JSON.parse(readFileSync(interviewPath, "utf8"));
+    if (interviewNeedsForm(data)) {
+      return { path: "/interview", label: "Scorecard interview" };
+    }
+  } catch {
+    return { path: "/interview", label: "Scorecard interview" };
+  }
+  return { path: "/write", label: "Scorecard Write mode" };
+}
+
 async function cmdDev() {
-  await startServer("/write", "Scorecard Write mode");
+  const { path, label } = resolveInterviewPath();
+  await startServer(path, label);
+}
+
+async function cmdInterview() {
+  await startServer("/interview", "Scorecard interview");
 }
 
 async function cmdBuild() {
@@ -139,6 +176,32 @@ function cmdRefresh() {
   console.log("Refresh: re-run the scorecard skill (Claude, Codex, Copilot, Cursor, or any agent that loaded it).");
   console.log("It must propose a diff for authored content — never overwrite.");
   console.log("Then open Write → Review: npx scorecard-kit dev");
+}
+
+function publicPathExists(webPath) {
+  if (!webPath?.startsWith("/")) return existsSync(webPath);
+  return existsSync(join(root, "public", webPath));
+}
+
+function validateFontPackManifestJs(manifestPath) {
+  const errors = [];
+  let m;
+  try {
+    m = JSON.parse(readFileSync(manifestPath, "utf8"));
+  } catch (e) {
+    errors.push(`${manifestPath}: ${e}`);
+    return errors;
+  }
+  for (const role of ["display", "body", "ui", "mono"]) {
+    const face = m.faces?.[role];
+    if (!face?.family || !face.woff2) errors.push(`font-pack ${m.packId}: faces.${role} incomplete`);
+    else if (!publicPathExists(face.woff2)) errors.push(`font-pack ${m.packId}: missing ${face.woff2}`);
+  }
+  const lic = m.license;
+  if (lic && !existsSync(join(root, lic)) && !publicPathExists(lic)) {
+    errors.push(`font-pack ${m.packId}: missing license ${lic}`);
+  }
+  return errors;
 }
 
 function cmdCheck() {
@@ -186,11 +249,103 @@ function cmdCheck() {
     console.error("redaction self-check failed");
     errors++;
   }
+  const themePath = join(contentDir, "theme.json");
+  if (existsSync(themePath)) {
+    try {
+      const theme = JSON.parse(readFileSync(themePath, "utf8"));
+      const catalogPath = join(root, "public/fonts/catalog.json");
+      const catalog = existsSync(catalogPath) ? JSON.parse(readFileSync(catalogPath, "utf8")) : {};
+      for (const [role, faceId] of Object.entries(theme.fontRoles ?? {})) {
+        const woff2 = catalog[faceId];
+        if (!woff2) {
+          console.error(`theme.fontRoles.${role}: unknown face ${faceId}`);
+          errors++;
+        } else if (!publicPathExists(woff2)) {
+          console.error(`theme.fontRoles.${role}: missing ${woff2}`);
+          errors++;
+        }
+      }
+      const packId = theme.fontPackId ?? "libretto-default";
+      const manifestPath = join(root, "font-packs", packId, "manifest.json");
+      if (!existsSync(manifestPath)) {
+        console.error(`theme fontPackId ${packId}: missing ${manifestPath}`);
+        errors++;
+      } else {
+        for (const msg of validateFontPackManifestJs(manifestPath)) {
+          console.error(msg);
+          errors++;
+        }
+      }
+    } catch (e) {
+      console.error(`theme.json: ${e}`);
+      errors++;
+    }
+  }
   if (errors) {
     console.error(`check failed (${errors})`);
     process.exit(1);
   }
   console.log(`check ok (${files.length} files)`);
+}
+
+function parseFontTraceArgs(argv) {
+  const out = {};
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (a === "--reference") out.reference = resolve(argv[++i]);
+    else if (a === "--packId" || a === "--pack-id") out.packId = argv[++i];
+    else if (a === "--label") out.label = argv[++i];
+    else if (a === "--family") out.family = argv[++i];
+    else if (a === "--rows") out.rows = argv[++i];
+  }
+  return out;
+}
+
+function cmdFonts() {
+  nodeOk();
+  const sub = process.argv[3];
+  if (sub === "trace") {
+    const args = parseFontTraceArgs(process.argv.slice(4));
+    if (!args.reference || !args.packId || !args.label) {
+      console.error(`Usage: npx scorecard-kit fonts trace --reference ./sheet.png --packId my-display --label "My Display"`);
+      process.exit(1);
+    }
+    const py = spawnSync(
+      "python3",
+      [
+        join(root, "scripts/font-trace/trace_pack.py"),
+        "--reference",
+        args.reference,
+        "--pack-id",
+        args.packId,
+        "--label",
+        args.label,
+        ...(args.family ? ["--family", args.family] : []),
+        ...(args.rows ? ["--rows", args.rows] : []),
+        "--kit-root",
+        root,
+      ],
+      { stdio: "inherit", cwd: root },
+    );
+    process.exit(py.status ?? 1);
+  }
+  if (sub === "list") {
+    const packs = join(root, "font-packs");
+    if (!existsSync(packs)) {
+      console.log("(no font-packs/)");
+      return;
+    }
+    for (const dir of readdirSync(packs, { withFileTypes: true }).filter((d) => d.isDirectory())) {
+      const mf = join(packs, dir.name, "manifest.json");
+      if (existsSync(mf)) {
+        const m = JSON.parse(readFileSync(mf, "utf8"));
+        console.log(`${m.packId}\t${m.label}`);
+      }
+    }
+    return;
+  }
+  console.error("Usage: scorecard-kit fonts trace|list");
+  process.exit(1);
 }
 
 function cmdLook() {
@@ -207,12 +362,14 @@ function cmdLook() {
 const cmd = process.argv[2] ?? "help";
 const map = {
   dev: cmdDev,
+  interview: cmdInterview,
   demos: cmdDemos,
   build: cmdBuild,
   export: cmdExport,
   refresh: cmdRefresh,
   check: cmdCheck,
   look: cmdLook,
+  fonts: cmdFonts,
   help: usage,
   "--help": usage,
 };
